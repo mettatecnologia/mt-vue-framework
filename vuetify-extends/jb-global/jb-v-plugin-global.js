@@ -218,7 +218,6 @@ export default {
 
         // Vue.prototype.$setFocus = function (ref) {
         //     //seta focus no mozilla firefox e edge principalmente
-        //     console.log(this.$refs);
 
         //     const element = this.$refs[ref].$el.querySelector('input')
         //     if (element) this.$nextTick(() => { element.focus() })

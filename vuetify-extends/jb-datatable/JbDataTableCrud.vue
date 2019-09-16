@@ -163,10 +163,6 @@ export default {
             },
             deep:true
         },
-        'dialog.mostrar'(v){
-            console.log('mostrar',v);
-
-        }
     },
     methods: {
         initialize(){
@@ -374,12 +370,6 @@ export default {
                         this.$dialog.message.success(response.mensagens.join('-'), {timeout: 5000});
 
                         this.fecharDialog()
-
-                        // console.log(this.value, this.modeloDefaultSave);
-
-                        // this.value = this.$resetarObjeto(this.value, this.modeloDefaultSave)
-
-                        // this.value = {}
 
                         this.posNovo(response, item)
                         this.posEditar(response, item)
