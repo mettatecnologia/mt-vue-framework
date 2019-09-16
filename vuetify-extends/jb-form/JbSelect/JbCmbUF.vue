@@ -1,20 +1,22 @@
 <template>
 
-        <jb-combobox v-model="vmodel" :items="uf" :name="name" :label="label" @input="v => this.$emit('input', v.value)" :regras="rules" :id="id" :ref="vuetify_ref" ></jb-combobox>
+    <jb-combobox
+        :ref="vuetify_ref"
+        v-model="vmodel"
+        v-on="this.$listeners"
+        v-bind="this.$attrs"
+
+        :items="ufs"
+    >
+    </jb-combobox>
 
 </template>
 
 <script>
 
 export default {
-    props:{
-        rules:String,
-        name:String,
-        label:String,
-        id:String,
-    },
     data() {return {
-        uf:[
+        ufs:[
             {text:'AC', value:'AC'},
             {text:'AL', value:'AL'},
             {text:'AP', value:'AP'},
@@ -42,12 +44,12 @@ export default {
             {text:'SE', value:'SE'},
             {text:'SP', value:'SP'},
             {text:'TO', value:'TO'},
-        ]
+        ],
     }},
     computed:{
         vuetify_ref(){
             return this.ref || 'jb-combobox'
         }
-    },
+    }
 }
 </script>

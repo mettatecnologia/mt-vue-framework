@@ -1,11 +1,17 @@
 <template>
-    <v-dialog v-model="mostrar" :fullscreen="fullscreen" :persistent="persistent" :max-width="maxWidth" :ref="vuetify_ref">
+    <v-dialog
+        :ref="vuetify_ref"
+        v-model="vmodel"
+        v-bind="this.$attrs"
+        v-on="this.$listeners"
+    >
 
         <v-card>
             <v-card-title>
                 <span class="headline">{{ getTitulo }}</span>
                 <v-spacer></v-spacer>
-                <jb-icon v-if="this.$listeners.fechar" tt-text="Fechar" @click="v=>(this.$emit('fechar', false))">fas fa-times</jb-icon>
+                <!-- <jb-icon v-if="this.$listeners.fechar" tt-text="Fechar" @click="v=>(this.$emit('fechar', false))">fas fa-times</jb-icon> -->
+                <jb-icon tt-text="Fechar" @click="fechar">fas fa-times</jb-icon>
             </v-card-title>
 
             <v-card-text>
@@ -20,21 +26,32 @@
 
 <script>
 
+    import {globalMixin} from '../jb-global/jb-v-mixin-global'
+
     export default {
+        mixins:[globalMixin],
         props:{
             value:Boolean,
-            persistent:Boolean, fullscreen:Boolean, maxWidth:String, titulo:String,
-        },
-        data() {
-            return {
-            }
+            titulo:String,
         },
         computed:{
             getTitulo(){ return this.titulo },
-            mostrar(){ return this.value },
             vuetify_ref(){
                 return this.ref || 'v-dialog'
             }
+        },
+        methods:{
+            fechar(){
+                if(this.$hasKey('fechar',this.$listeners)){
+                    this.$emit('fechar', this);
+                }
+                else {
+                    this.value = false
+                }
+
+                this.$emit('input', this.value);
+            },
         }
+
     }
 </script>

@@ -1,9 +1,17 @@
 <template>
 <div>
-    <!-- o codigo -->
-
     <jb-loading v-model="loading.mostrar"></jb-loading>
-    <jb-combobox v-model="cidade" :items="cidades" :name="name" :label="label" :regras="rules" :disabled="disabled" :ref="vuetify_ref" :id="id" @input="v => this.$emit('input', v.value)"></jb-combobox>
+
+    <jb-combobox
+        :ref="ref"
+        v-model="cidade"
+        v-on="this.$listeners"
+        v-bind="this.$attrs"
+
+        :items="cidades"
+    >
+    </jb-combobox>
+
 </div>
 
 </template>
@@ -13,13 +21,8 @@
 import axios from 'axios'
 
 export default {
-    props:{
+     props:{
         uf:String,
-        rules:String,
-        name:String,
-        label:String,
-        disabled:Boolean,
-        id:String,
     },
     data: function () { return {
         cidade: null,
@@ -42,13 +45,17 @@ export default {
         }
     },
     watch:{
-        'uf'(uf){
+        uf(uf){
             this.cidade = null
             this.buscarCidades(uf)
         },
     },
     methods:{
         buscarCidades(uf){
+            if(uf && typeof uf == 'object'){
+                uf = uf.value
+            }
+
             this.loading.mostrar = true
 
             axios.get(`buscarCidadesPorEstado/${uf}`)
@@ -60,7 +67,7 @@ export default {
                     this.dialog.form.mensagens_data = response.mensagens
                 }
                 else {
-                    this.cidades = response.dados.length ? this.$criarObjetoParaCombobox(response.dados, 'cidade_nome', 'cidade_cod') : [];
+                    this.cidades = response.dados.length ? this.$criarArrayParaCombobox(response.dados, 'cidade_nome', 'cidade_cod') : [];
                     if(this.cidade_cod){
                         this.selecionarCidade()
                     }
@@ -70,6 +77,7 @@ export default {
         },
         selecionarCidade(){
             let result = this.$buscaItemDatatable(this.cidades, this.cidade_cod)
+
             if(result.index < 0){
                 return null
             }

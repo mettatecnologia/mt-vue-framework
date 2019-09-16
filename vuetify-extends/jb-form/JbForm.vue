@@ -1,10 +1,23 @@
 <template>
     <div>
         <slot name="mensagens">
-            <jb-alert v-model="messages" :color="mensagensTipo" :tooltip="mensagensDetalhes" dense />
+            <jb-alert v-model="messages" :color="mensagensTipo || 'red'" :tooltip="mensagensDetalhes" dense dark />
         </slot>
 
-        <v-form :ref="vuetify_ref" :method="method" :action="action" class="pa-2" v-model="valid" @input="v => this.$emit('input', v)" @submit="submit" enctype="multipart/form-data" >
+        <v-form
+            :ref="vuetify_ref"
+            v-model="valid"
+            v-on="this.$listeners"
+            v-bind="this.$attrs"
+
+            :method="method"
+            :action="action"
+            @submit="submit"
+            @input="v => this.$emit('input', v)"
+
+            class="pa-2"
+            enctype="multipart/form-data"
+        >
             <input v-if="csrf" type="hidden" name="_token" :value="csrf" />
 
             <slot></slot>
@@ -21,13 +34,10 @@
 </template>
 
 <script>
+
     export default {
-        extends: window.Vue._VForm,
         props: {
-            value:Boolean,
             /** ======= FORMULARIO */
-            method:{type:String, default:"POST"}, action:String,
-            csrf:String,
             validar:Boolean,
             validarCampos:{type:Boolean, default:true},
             resetValidation:Boolean,
@@ -38,40 +48,41 @@
             btnLimparText:{type:String, default:'Limpar'},
 
             /** ======= MENSAGENS */
-            mensagens:{type:[Array, String], default:() => ([])}, mensagensTipo:{type:String}, mensagensDetalhes:String,
-        },
-        data: function () {
-            return {
-                valid: this.value,
-            }
+            mensagens:{type:[Array, String], default:() => ([])},
+            mensagensTipo:{type:String},
+            mensagensDetalhes:String,
         },
         computed: {
-            messages: function () {
-                return this.formataMensagensDeAlerta(this.mensagens)
+            messages: {
+                get(){
+                    return this.formataMensagensDeAlerta()
+                },
+                set(aberto){
+                    if(!aberto){
+                        this.mensagens = {}
+                    }
+
+                },
             },
             vuetify_ref(){
                 return this.ref || 'v-form'
             }
         },
+        created(){
+            Object.assign(this, this.$attrs)
+        },
         mounted(){
-            this.$mesclarComponentesViaRef(this,'_events')
-
             if(this.validarCampos)
             {
                 this.ativarValidacaoCampos()
             }
         },
-        watch:{
-            resetValidation(v){
-                if(v)
-                {
-                    this.$refs[this.vuetify_ref].resetValidation();
-                }
-            }
-        },
         methods: {
             limpar(){
                 this.$refs[this.vuetify_ref].reset();
+            },
+            resetarValidacao(){
+                this.$refs[this.vuetify_ref].resetValidation();
             },
             submit(e) {
                 this.$emit('submit', e, this.$refs[this.vuetify_ref].validate());
@@ -83,7 +94,8 @@
                     e.preventDefault();
                 }
             },
-            formataMensagensDeAlerta(mensagens){
+            formataMensagensDeAlerta(){
+                let mensagens = this.mensagens
 
                 let retorno = null
 
@@ -103,7 +115,6 @@
                     }
 
                     return retorno;
-
                 }
             },
             ativarValidacaoCampos(){
@@ -112,6 +123,9 @@
                     const input = inputs[i];
                     input.$parent.validar = true
                 }
+
+                this.$refs[this.vuetify_ref].resetValidation();
+
             },
         },
     }

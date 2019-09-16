@@ -38,11 +38,11 @@
 
     </jb-datatable>
 
-    <jb-dialog v-model="dialog.mostrar" @fechar="fecharDialog" :titulo="formTitulo" :fullscreen="dialogFullscreen" :persistent="dialogPersistent" :max-width="dialogMaxWidth || '750px'">
+    <jb-dialog v-model="dialog.mostrar" :titulo="formTitulo" :fullscreen="dialogFullscreen" :persistent="dialogPersistent" :max-width="dialogMaxWidth || '750px'">
 
         <jb-loading v-model="loading.mostrar"></jb-loading>
 
-        <jb-form validar v-model="form.valid" ref="jbform" :mensagens="form.mensagens.mensagens" :mensagens-tipo="form.mensagens.tipo" :mensagens-detalhes="form.mensagens.detalhes" :reset="form.reset" @keyup.native.enter="submitEnter" :reset-validation="form.resetValidation">
+        <jb-form validar v-model="form.valid" ref="jb-form" :mensagens="form.mensagens.mensagens" :mensagens-tipo="form.mensagens.tipo" :mensagens-detalhes="form.mensagens.detalhes" :reset="form.reset" @keyup.native.enter="submitEnter">
             <slot name="form" :datatable_form="form"></slot>
 
             <v-card-actions slot="botoes">
@@ -119,9 +119,8 @@ export default {
         httpUrl:String,
 
     },
-    data() {
-        return {
-            modeloDefaultSave:JSON.parse(JSON.stringify(this.value)),
+    data() {return {
+            modeloDefaultSave:this.$copiarObjeto(this.value),
             AxiosModel: this.vueapiqueryModel,
 
             dialog:{
@@ -144,25 +143,18 @@ export default {
                 items:[],
                 indexItem: -1,
             },
-        }
-    },
+    }},
     computed: {
         formTitulo() { return this.datatable.indexItem === -1 ? this.tituloNovo :  this.tituloEditar },
         datatableSearch(){ return this.search || this.datatable.search },
         vuetify_ref(){ return this.ref || 'jb-datatable' }
     },
     created () {
-        this.datatable.items = this.$clonarObjeto(this.items)
+        this.datatable.items = this.$copiarObjeto(this.items)
         this.initialize()
     },
     mounted(){
         let vuetify_comp = this.$refs[this.vuetify_ref]
-
-        Object.assign(vuetify_comp.$scopedSlots, this.$scopedSlots)
-        Object.assign(vuetify_comp.$slots, this.$slots)
-        Object.assign(vuetify_comp._events, this._events)
-
-        vuetify_comp.atualizarComponente(); //atualiza o componente para todos os v-slots do PARENT serem atualizados corretamente
     },
     watch:{
         formMensagens:{
@@ -170,6 +162,10 @@ export default {
                 this.form.mensagens = this.$criarObjetoMensagensForm(this.formMensagens.mensagens, this.formMensagens.tipo, this.formMensagens.detalhes);
             },
             deep:true
+        },
+        'dialog.mostrar'(v){
+            console.log('mostrar',v);
+
         }
     },
     methods: {
@@ -179,20 +175,25 @@ export default {
             }
             else {
                 this.form.mensagens = this.$criarObjetoMensagensForm(this.formMensagens.mensagens, this.formMensagens.tipo, this.formMensagens.detalhes);
-                this.form.reset = true
-                if(this.$refs.jbform)
-                {
-                    this.$refs.jbform.$refs.vform.resetValidation()
-                }
-
-                this.value = Object.assign(this.value, this.modeloDefaultSave)
+                this.reiniciarForm()
 
                 this.datatable.indexItem = -1
             }
 
         },
+        reiniciarForm(){
+            if(this.$refs['jb-form'])
+            {
+                let jb_form = this.$refs['jb-form']
+                let vform = this.$refs['jb-form'].$refs[jb_form.vuetify_ref]
+
+                Object.assign(this.value, this.modeloDefaultSave)
+
+                vform.resetValidation()
+            }
+        },
         abrirDialog(){
-            this.dialog.mostrar=true
+            this.dialog.mostrar = true
         },
         fecharDialog() {
             this.dialog.mostrar = false
@@ -201,20 +202,22 @@ export default {
 
         // ==== Operações das Actions do Datatable
         novo(){
-            this.form.reset = true
+            this.reiniciarForm()
             this.preNovo()
             this.abrirDialog()
         },
         editar (item) {
             this.datatable.indexItem = this.datatable.items.indexOf(item)
 
-            item = this.buscaItemOriginal(this.datatable.indexItem)
+            item = this.buscarDatatableItem(this.datatable.indexItem)
             item = this.preEditar(item)
 
-            this.value = Object.assign(this.value, item)
+            Object.assign(this.value, item)
 
-            this.form.reset = false
             this.abrirDialog()
+        },
+        buscarDatatableItem(index){
+            return this.items[index]
         },
         submitEnter(){
             if(this.form.valid && this.formValid){
@@ -292,9 +295,7 @@ export default {
                 }
             })
         },
-        buscaItemOriginal(index){
-            return this.items[index]
-        },
+
 
         // ==== Operações HTTP
         ativarInativar(item){
@@ -373,6 +374,12 @@ export default {
                         this.$dialog.message.success(response.mensagens.join('-'), {timeout: 5000});
 
                         this.fecharDialog()
+
+                        // console.log(this.value, this.modeloDefaultSave);
+
+                        // this.value = this.$resetarObjeto(this.value, this.modeloDefaultSave)
+
+                        // this.value = {}
 
                         this.posNovo(response, item)
                         this.posEditar(response, item)

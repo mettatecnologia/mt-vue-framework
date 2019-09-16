@@ -1,35 +1,43 @@
 <template>
 
-        <jb-text
-            v-model="vmodel"
-            :name="name_cp"
-            :label="label_cp"
-            :regras="regras_cp"
+    <jb-text
+        :ref="vuetify_ref"
+        v-model="vmodel"
+        v-bind="this.$attrs"
+        v-on="this.$listeners"
 
-            :id="id"
-            :placeholder="placeholder"
-            :disabled="disabled"
-            :readonly="readonly"
-            :ref="vuetify_ref"
-
-            @input="v => this.$emit('input', v)"
-        ></jb-text>
+        :name="name_cp"
+        :label="label_cp"
+        :regras="regras_cp"
+    ></jb-text>
 
 </template>
 
 <script>
 
+import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
+
 export default {
+    mixins: [inputBaseMixin],
     props:{
-        value:String,
-        regras:String, label:String, id:String, type:String, placeholder:String, name:String, disabled:Boolean, readonly:Boolean, min:Number, max:Number,
-        unique:{type:[Boolean,Array]},
+        unique:String,
     },
-    data() { return {
-        vmodel:this.value,
-    }},
     computed:{
         regras_cp(){
+            return this.montarRegras()
+        },
+        label_cp(){
+            return this.label || 'Email'
+        },
+        name_cp(){
+            return this.name || 'email'
+        },
+        vuetify_ref(){
+            return this.ref || 'jb-text'
+        }
+    },
+    methods:{
+        montarRegras(){
             let unique = []
 
             if(this.unique){
@@ -43,9 +51,8 @@ export default {
                 }
             }
 
-
-
             let regras = []
+
             if(this.$typeof(this.regras,'string'))
             {
                 regras = [this.regras]
@@ -56,17 +63,7 @@ export default {
             }
 
             return regras.concat(unique).concat(['email'])
-
-        },
-        label_cp(){
-            return this.label || 'Email'
-        },
-        name_cp(){
-            return this.name || 'email'
-        },
-        vuetify_ref(){
-            return this.ref || 'jb-text'
         }
-    },
+    }
 }
 </script>

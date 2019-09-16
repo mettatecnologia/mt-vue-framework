@@ -1,14 +1,15 @@
 <template>
 
         <v-combobox
+            :ref="ref"
             v-model="vmodel"
+            v-on="this.$listeners"
+            v-bind="this.$attrs"
+
             :label="label_comp"
             :rules="vmodelRules"
             :error-messages="error_messages"
-            :name="name"
             :search-input.sync="search"
-
-            :ref="vuetify_ref"
         >
             <template v-slot:no-data>
                 <v-list-tile>
@@ -25,29 +26,35 @@
 
 <script>
 
-import {validacaoMixin} from '../mixins/jb-v-mixin-validacao'
 import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
 
 export default {
-    extends: window.Vue._VCombobox,
-    mixins: [validacaoMixin, inputBaseMixin],
+    mixins: [inputBaseMixin],
+    props:{
+        retornoKey:{type:String, default:null}
+    },
     data() {return{
         search:'',
+        ref:"v-combobox"
     }},
     computed:{
         vmodel(){
-            if(typeof this.itens[0] == 'object'){
+
+            if(this.itens && typeof this.itens[0] == 'object'){
                 let result = this.$buscaItemDatatable(this.itens,this.value)
                 if(result){ return result.result }
             }
-            return this.value
+
+            if(this.retornoKey && this.$hasKey(this.retornoKey,this.value)){
+                return this.value[this.retornoKey]
+            }
+            else {
+                return this.value
+            }
         },
         itens(){
             return this.items
         },
-        vuetify_ref(){
-            return this.ref || 'v-combobox'
-        }
     },
 }
 </script>

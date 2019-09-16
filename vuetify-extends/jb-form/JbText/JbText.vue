@@ -1,17 +1,16 @@
 <template>
 
     <v-text-field
+        :ref="vuetify_ref"
+        v-model="vmodel_comp"
+        v-on="inputListeners"
+        v-bind="this.$attrs"
+
         :label="label_comp"
         :error-messages="error_messages"
         :rules="vmodelRules"
 
-        :name="name"
-
-        v-model="vmodel_comp"
         v-mask="vmodelMask"
-        v-on="inputListeners"
-
-        :ref="vuetify_ref"
     >
 
     </v-text-field>
@@ -20,16 +19,11 @@
 
 <script>
 
-import {validacaoMixin} from '../mixins/jb-v-mixin-validacao'
 import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
 import mask from '../jb-v-diretiva-mask'
 
 export default {
-    extends: window.Vue._VTextField,
-    mixins: [validacaoMixin, inputBaseMixin],
-    data () {return {
-        vmodel: this.value,
-    }},
+    mixins: [inputBaseMixin],
     computed:{
         inputListeners: function () {
             /** pego da documentacao do oficial do VueJs */
@@ -41,17 +35,7 @@ export default {
              *          -> Isso garante que o componente funcione com o v-model
              */
             var vm = this
-
-            return Object.assign({}, this.$listeners, {
-                input: function (e) {
-                        let value = e ? vm.pegaValorParaEmit(e) : e
-                        vm.$emit('input', value)
-
-                        // vm.$emit('input', e)
-                        // vm.$emit('input', event.target.value)
-                    }
-                }
-            )
+            return Object.assign({}, this.$listeners, { input: function (e) {let v = e ? vm.pegaValorParaEmit(e) : e ;  vm.$emit('input', v) } })
         },
         vmodel_comp: {
             get(){
@@ -79,15 +63,6 @@ export default {
                 this.vmodel = value
             }
         },
-        vuetify_ref(){
-            return this.ref || 'v-text-field'
-        },
-    },
-    updated(){
-        let v_textfield = this.$refs[this.vuetify_ref]
-        v_textfield._props.type = this._props.type
-        v_textfield._props.appendIcon = this._props.appendIcon
-        v_textfield._props.value = this._props.value
     },
     methods: {
         pegaValorParaEmit(value){

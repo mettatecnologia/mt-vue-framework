@@ -37,7 +37,7 @@
                 ></jb-text>
             </template>
 
-            <jb-datetime-picker ref="jb-datetime-picker" v-model="picker.value" :tipo="tipo" :reactive="reactive" :min="min" :max="max" :historica="historica"></jb-datetime-picker>
+            <jb-datetime-picker :ref="vuetify_ref" v-model="picker.value" :tipo="tipo" :reactive="reactive" :min="min" :max="max" :historica="historica"></jb-datetime-picker>
 
         </v-menu>
 
@@ -46,8 +46,10 @@
 <script>
 
 import moment from 'moment'
+import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
 
 export default {
+    mixins: [inputBaseMixin],
     props:{
         value:String,
         rules:String, label:String, id:String, type:String, placeholder:String, name:String, disabled:Boolean, readonly:Boolean,
@@ -85,18 +87,22 @@ export default {
                 return this.tipo
             }
 
+            if( ! this.picker.value){
+                return 'date'
+            }
+
             let isDate = this.picker.value.indexOf('-')>-1
             let isTime = this.picker.value.indexOf(':')>-1
 
             if(isDate && isTime){
                 return 'datetime'
             }
-            if(isDate)
+            if(isTime)
             {
-                return 'date'
+                return 'time'
             }
             else {
-                return 'time'
+                return 'date'
             }
 
         },
@@ -123,15 +129,18 @@ export default {
             }
 
             return rules
+        },
+        vuetify_ref(){
+            return this.ref || 'jb-datetime-picker'
         }
     },
     created(){
         this.setarIconeInput()
     },
     updated(){
-        if(this.$refs['jb-datetime-picker'] && ! this.jb_datetime_picker)
+        if(this.$refs[this.vuetify_ref] && ! this.jb_datetime_picker)
         {
-            this.jb_datetime_picker = this.$refs['jb-datetime-picker']
+            this.jb_datetime_picker = this.$refs[this.vuetify_ref]
         }
     },
     watch: {
@@ -145,9 +154,9 @@ export default {
             this.value = v
         },
         'menu.exibir'(abrir){
-            if(abrir && this.$refs['jb-datetime-picker'])
+            if(abrir && this.$refs[this.vuetify_ref])
             {
-                this.$refs['jb-datetime-picker'].selecionou = false
+                this.$refs[this.vuetify_ref].selecionou = false
             }
         },
         'jb_datetime_picker.selecionou'(selecionou){

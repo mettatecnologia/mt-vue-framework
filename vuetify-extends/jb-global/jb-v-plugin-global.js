@@ -52,29 +52,7 @@ export default {
             window.location.href = url;
         }
         // OBJETOS
-        Vue.prototype.$mesclarComponentesViaRef = function ($this, ignore=[]){
-            let vuetify_comp = $this.$refs[$this.vuetify_ref]
-
-            if( ! this.$typeof(ignore,'array')){
-                ignore = [ignore]
-            }
-
-            if(ignore.indexOf('_props')<0){
-                Object.assign(vuetify_comp._props, $this._props)
-            }
-            if(ignore.indexOf('$scopedSlots')<0){
-                Object.assign(vuetify_comp.$scopedSlots, $this.$scopedSlots)
-            }
-            if(ignore.indexOf('$slots')<0){
-                Object.assign(vuetify_comp.$slots, $this.$slots)
-            }
-            if(ignore.indexOf('_events')<0){
-                Object.assign(vuetify_comp._events, $this._events)
-            }
-
-
-        }
-        Vue.prototype.$clonarObjeto = function (obj){
+        Vue.prototype.$copiarObjeto = function (obj){
             return JSON.parse(JSON.stringify(obj));
         }
         Vue.prototype.$criarObjetoMensagensForm = function (mensagens, tipo, detalhes) {
@@ -111,6 +89,14 @@ export default {
                 result: result.length ? result[0] : null,
             }
         }
+        Vue.prototype.$hasKey = function (key, obj){
+            if(obj){
+                return {}.hasOwnProperty.call(obj, key)
+            }
+
+            return false
+        }
+
         // ARRAY
         Vue.prototype.$criarArrayParaCombobox = function (obj, campo_text, campo_value){
             let primeira_key = Object.keys(obj)[0]
@@ -139,6 +125,37 @@ export default {
                 datetime = [date.split('-').reverse().join('/'), time].join(' ')
             }
             return datetime;
+        }
+        Vue.prototype.$resetarObjeto = function (obj, modelo) {
+
+            for (const key in obj) {
+                let cada = obj[key];
+
+                if(modelo && this.$hasKey(key, modelo)){
+                    cada = modelo[key]
+                }
+                else {
+                    if(this.$typeof(cada,'null')){
+                        cada = null
+                    }
+                    if(this.$typeof(cada,'boolean')){
+                        cada = true
+                    }
+                    else if(this.$typeof(cada,'object')){
+                        cada = {}
+                    }
+                    else if(this.$typeof(cada,'array')){
+                        cada = []
+                    }
+                    else if(this.$typeof(cada,'string')){
+                        cada = ''
+                    }
+                }
+
+                obj[key] = cada
+            }
+
+            return obj
         }
         // STRING
         Vue.prototype.$removerEspacos = function (string) {
@@ -171,13 +188,25 @@ export default {
         // OUTROS
         Vue.prototype.$typeof = function (v, eTipo){
             let tipo = typeof v
-            if(tipo=='object' && Array.isArray(v))
+
+            if(v===null){
+                tipo = 'null'
+            }
+            else if(v===undefined){
+                tipo = 'undefined'
+            }
+            else if(v===true || v===false){
+                tipo = 'boolean'
+            }
+            else if(tipo=='object' && Array.isArray(v))
             {
                 tipo = 'array'
             }
+
             if(eTipo){
                 return eTipo === tipo
             }
+
             return tipo
         }
         Vue.prototype.$isJson = function (str, pass_object) {

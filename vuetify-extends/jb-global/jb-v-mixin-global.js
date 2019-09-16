@@ -1,6 +1,8 @@
 
 export const globalMixin = {
-    props:{},
+    props:{
+        value:String,
+    },
     data() {return{
         atualizar_componente:false
     }},
@@ -11,8 +13,6 @@ export const globalMixin = {
         vuetify_ref(){
             return this.ref || `uid_${this._uid}`
         }
-    },
-    created(){
     },
     methods: {
         atualizarComponente(){

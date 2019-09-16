@@ -1,5 +1,14 @@
 <template>
-    <v-alert v-model="value" dismissible :color="color || 'info'" :ref="vuetify_ref" :dense="dense" :class="exibir?'':'display_none'" dark >
+    <v-alert
+        :ref="vuetify_ref"
+        v-model="vmodel"
+        v-bind="this.$attrs"
+        v-on="this.$listeners"
+
+        :color="color || 'info'"
+        :class="exibir?'':'display_none'"
+        @input="input"
+    >
         <div v-if="value_type=='string'">
             {{value}}
         </div>
@@ -19,25 +28,33 @@
 </template>
 
 <script>
+
+    import {globalMixin} from '../jb-global/jb-v-mixin-global'
+
     export default {
-        extends: window.Vue._VAlert,
+        mixins:[globalMixin],
         props: {
             tooltip:String,
         },
         computed:{
-            vuetify_ref(){
-                return this.ref || 'v-alert'
-            },
             value_type(){
                 return this.$typeof(this.value)
             },
             exibir(){
-                return this.$typeof(this.value,'string') || Object.keys(this.value).length > 0
+                return this.value && (this.$typeof(this.value,'string') || Object.keys(this.value).length > 0)
             },
+            vuetify_ref(){
+                return this.ref || 'jb-alert'
+            }
         },
-        mounted(){
-            this.$mesclarComponentesViaRef(this)
+        created(){
+            Object.assign(this, this.$attrs)
         },
+        methods:{
+            input(aberto){
+                this.$emit('input', aberto);
+            }
+        }
     }
  </script>
 
