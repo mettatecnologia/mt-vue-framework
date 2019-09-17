@@ -32,7 +32,7 @@
 -->
 <template>
 
-    <v-data-table v-bind="this.$attrs" v-on="this.$listeners" class="elevation-1" :ref="vuetify_ref">
+    <v-data-table :items="items" :headers="headers" v-bind="this.$attrs" v-on="this.$listeners" class="elevation-1" :ref="vuetify_ref">
 
         <template v-slot:top="{ items, pagination, options, groupedItems, updateOptions, sort, group }" >
             <slot name="top" :items="items" :pagination="pagination" :options="options" :groupedItems="groupedItems" :updateOptions="updateOptions" :sort="sort" :group="group"></slot>
@@ -45,8 +45,19 @@
             <slot name="body.prepend" :items="items" :pagination="pagination" :options="options" :groupedItems="groupedItems" :updateOptions="updateOptions" :sort="sort" :group="group"></slot>
         </template>
 
-        <template v-slot:item.actions="{ item, header, value }" >
-            <slot name="item.actions" :item="item" :header="header" :value="value"></slot>
+        <template v-slot:item="{ item, select, isSelected, expand, isExpanded, headers, index }" >
+            <tr>
+                <template v-for="(header, key) in headers" >
+                    <td v-if="header.value!='actions'" :class="header['class']" :key="key">{{ aplicarHeaderAlteracoes(header, item[header.value]) }}</td>
+                    <template v-else>
+                        <td :class="header['class']" :key="key">
+
+                            <slot name="item.actions" :item="item" :header="header" :value="header.value"></slot>
+                        </td>
+                    </template>
+
+                </template>
+            </tr>
         </template>
 
         <template v-slot:footer="{ items, pagination, options, groupedItems, updateOptions, sort, group, headers, isMobile, }" >
@@ -77,13 +88,14 @@ import {globalMixin} from '../jb-global/jb-v-mixin-global'
 
 export default {
     mixins: [globalMixin],
+    props:{
+        headers:String,
+        items:String,
+    },
     computed:{
         vuetify_ref(){
             return this.ref || 'v-data-table'
         }
-    },
-    created(){
-        this.alterarItemsPeloHeader()
     },
     methods: {
         aplicarHeaderMetodo(metodo, value){
@@ -118,23 +130,24 @@ export default {
             }
             return value
         },
-        alterarItemsPeloHeader(){
-            let vuetify_comp = this.$refs[this.vuetify_ref]
-            let headers = this.$attrs.headers
-            let items = this.$attrs.items
+        // formataItemsPeloHeader(){
 
-            for (const key_header in headers) {
-                const header = headers[key_header];
-                if(header.method || header.metodo || header.format || header.formato){
-                    for (const key_item in items) {
-                        const item = items[key_item];
-                        item[header.value] = this.aplicarHeaderAlteracoes(header, item[header.value])
-                    }
+        //     let vuetify_comp = this.$refs[this.vuetify_ref]
+        //     let headers = this.headers
 
-                }
+        //     let items = this.items
 
-            }
-        },
+        //     for (const key_item in items) {
+        //         const item = items[key_item];
+        //         for (const key_header in headers) {
+        //             const header = headers[key_header];
+        //             if(header.method || header.metodo || header.format || header.formato){
+        //                 item[header.value] = this.aplicarHeaderAlteracoes(header, item[header.value])
+        //             }
+        //         }
+        //     }
+
+        // },
     },
 
 }

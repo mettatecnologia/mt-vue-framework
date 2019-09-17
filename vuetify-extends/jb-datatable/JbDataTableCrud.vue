@@ -213,7 +213,7 @@ export default {
             this.abrirDialog()
         },
         buscarDatatableItem(index){
-            return this.items[index]
+            return this.datatable.items[index]
         },
         submitEnter(){
             if(this.form.valid && this.formValid){
