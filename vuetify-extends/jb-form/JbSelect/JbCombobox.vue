@@ -1,7 +1,7 @@
 <template>
 
         <v-combobox
-            :ref="ref"
+            :ref="vuetify_ref"
             v-model="vmodel"
             v-on="this.$listeners"
             v-bind="this.$attrs"
@@ -35,9 +35,11 @@ export default {
     },
     data() {return{
         search:'',
-        ref:"v-combobox"
     }},
     computed:{
+        vuetify_ref(){
+            return this.ref || 'v-combobox'
+        },
         vmodel(){
 
             if(this.itens && typeof this.itens[0] == 'object'){

@@ -48,9 +48,9 @@
         <template v-slot:item="{ item, select, isSelected, expand, isExpanded, headers, index }" >
             <tr>
                 <template v-for="(header, key) in headers" >
-                    <td v-if="header.value!='actions'" :class="header['class']" :key="key">{{ aplicarHeaderAlteracoes(header, item[header.value]) }}</td>
+                    <td v-if="header.value!='actions'" :class="pegarClassePeloAlign(header)" :key="key">{{ aplicarHeaderAlteracoes(header, item[header.value]) }}</td>
                     <template v-else>
-                        <td :class="header['class']" :key="key">
+                        <td :class="pegarClassePeloAlign(header)" :key="key">
 
                             <slot name="item.actions" :item="item" :header="header" :value="header.value"></slot>
                         </td>
@@ -129,6 +129,22 @@ export default {
                 value = this.aplicarHeaderFormato(formato, value)
             }
             return value
+        },
+        pegarClassePeloAlign(header){
+            if(header['class']){
+                return header['class']
+            }
+            else if(header['align']) {
+                let align = header['align']
+                if(align=='start'){ return 'text-left' }
+                else if(align=='end'){ return 'text-right' }
+                else { return 'text-center' }
+
+
+            }
+
+            return 'text-center'
+
         },
         // formataItemsPeloHeader(){
 
