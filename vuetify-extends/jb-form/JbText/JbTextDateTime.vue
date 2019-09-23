@@ -29,15 +29,30 @@
                     clearable
 
                     :regras="rules_validacao"
-                    :mascara="picker_tipo"
+                    :mascara="picker.tipo"
 
                     v-on="on"
 
-                    @input="textFieldEmit"
+                    @input="textFieldEmitInput"
                 ></jb-text>
             </template>
 
-            <jb-datetime-picker :ref="vuetify_ref" v-model="picker.value" :tipo="tipo" :reactive="reactive" :min="min" :max="max" :historica="historica"></jb-datetime-picker>
+            <jb-datetime-picker
+                v-model="picker.value"
+                :ref="vuetify_ref"
+                :tipo="picker.tipo"
+                :reactive="reactive"
+                :min="min"
+                :max="max"
+                :historic="historic"
+
+                @input="datetimepickerEmitInput"
+                @click:date="datePickerEmitClickDate"
+
+                @click:minute="timeMinutePickerEmitClick"
+            >
+
+            </jb-datetime-picker>
 
         </v-menu>
 
@@ -51,7 +66,6 @@ import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
 export default {
     mixins: [inputBaseMixin],
     props:{
-        value:String,
         rules:String, label:String, id:String, type:String, placeholder:String, name:String, disabled:Boolean, readonly:Boolean,
 
         autofocus:Boolean,
@@ -61,8 +75,8 @@ export default {
         hint:String,
         persistentHint:Boolean,
 
-        tipo:String,
-        historica:Boolean,
+        tipo:{type:String},
+        historic:Boolean,
         reactive:Boolean,
         min:String,max:String,
     },
@@ -75,121 +89,102 @@ export default {
             appendIcon: this.appendIcon
         },
         picker:{
-            value: this.value
+            value: this.value,
+            tipo: null,
         },
-        jb_datetime_picker: false,
     }},
 
     computed: {
-        picker_tipo(){
-            if(this.tipo)
-            {
-                return this.tipo
-            }
-
-            if( ! this.picker.value){
-                return 'date'
-            }
-
-            let isDate = this.picker.value.indexOf('-')>-1
-            let isTime = this.picker.value.indexOf(':')>-1
-
-            if(isDate && isTime){
-                return 'datetime'
-            }
-            if(isTime)
-            {
-                return 'time'
-            }
-            else {
-                return 'date'
-            }
-
+        vuetify_ref(){
+            return this.ref || 'jb-text-datetime'
         },
         vmodel () {
-            if(this.value || this.picker.value){
-                if(this.picker_tipo == 'datetime'){
-                    return moment(this.value).format('DD/MM/YYYY HH:mm')
+            let value = moment(this.value)
+
+            if(value.isValid()){
+                if(this.picker.tipo == 'datetime'){
+                    return value.format('DD/MM/YYYY HH:mm')
                 }
-                if(this.picker_tipo == 'date')
+                if(this.picker.tipo == 'date')
                 {
-                    return moment(this.value).format('DD/MM/YYYY')
+                    return value.format('DD/MM/YYYY')
                 }
-                else if(this.picker_tipo == 'time') {
+                else if(this.picker.tipo == 'time') {
                     return this.value
                 }
             }
+
             return null
         },
         rules_validacao()
         {
-            let rules = [this.picker_tipo]
-            if(this.rules){
-                rules.push(this.rules)
+            let rules = [this.tipo]
+            if(this.regras){
+                rules.push(this.regras)
             }
 
             return rules
         },
-        vuetify_ref(){
-            return this.ref || 'jb-datetime-picker'
-        }
     },
     created(){
         this.setarIconeInput()
-    },
-    updated(){
-        if(this.$refs[this.vuetify_ref] && ! this.jb_datetime_picker)
-        {
-            this.jb_datetime_picker = this.$refs[this.vuetify_ref]
-        }
-    },
-    watch: {
-        value(v){
-            if( ! v ){
-                this.picker.value = ''
-            }
-            this.$emit('input', v)
-        },
-        'picker.value'(v){
-            this.value = v
-        },
-        'menu.exibir'(abrir){
-            if(abrir && this.$refs[this.vuetify_ref])
-            {
-                this.$refs[this.vuetify_ref].selecionou = false
-            }
-        },
-        'jb_datetime_picker.selecionou'(selecionou){
-            this.menu.exibir = ! selecionou
-        }
-
+        this.definirTipo()
     },
     methods: {
-        textFieldEmit(v){
-            if(v){
-                v = v.split(' ')
-                v[0] = v[0].split('/').reverse().join('-')
-                v = v.join(' ')
-
-                if(moment(v).isValid()){
-                    this.$emit('input', v)
-                }
+        fechar(){
+            this.menu.exibir = false
+        },
+        definirTipo(tipo){
+            if(tipo){
+                this.picker.tipo = tipo
+            }
+            else if(this.tipo){
+                this.picker.tipo = this.tipo
             }
             else {
-                this.value = null
+                let v = this.value
+
+                if(this.$regex('date_us',v)){
+                    this.picker.tipo = 'date'
+                }
+                else if (this.$regex('datetime_us',v)){
+                    this.picker.tipo = 'datetime'
+                }
+                else if(this.$regex('time',v)){
+                    this.picker.tipo = 'time'
+                }
+                else {
+                    console.error('tipo de data/time invalido')
+                    this.picker.tipo = null
+
+                }
             }
+        },
+        datePickerEmitClickDate(v){
+            if(this.picker.tipo=='date'){
+                this.fechar()
+            }
+            this.$emit('click:date', v)
+        },
+        datetimepickerEmitInput(v){
+            this.$emit('input', v)
+        },
+        timeMinutePickerEmitClick(v){
+            this.fechar()
+        },
+        textFieldEmitInput(v){
+            if(this.$regex('date_us',v) || this.$regex('datetime_us',v)){
+                this.$emit('input', v)
+            }
+            this.fechar()
         },
         setarIconeInput(){
             let icone = null
-            if(this.appendIcon){
-                icone = this.appendIcon
-            }
-            else if(this.picker_tipo=='time'){
-                icone = 'access_time'
-            }
-            else {
-                icone = 'event'
-            }
+
+            if(this.appendIcon){ icone = this.appendIcon }
+            else if(this.tipo=='time'){ icone = 'access_time' }
+            else { icone = 'event' }
+
             this.input.appendIcon = icone
         },
     }

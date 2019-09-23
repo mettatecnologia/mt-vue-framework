@@ -128,7 +128,7 @@ export const validacaoMixin = {
         },
         validacao_axios(regra, params){
             if(regra == 'email-unique'){
-                let email_valido = this.$buscarRegExp('email').test(this.value)
+                let email_valido = this.$regex('email').test(this.value)
                 if( ! email_valido){ return true }
                 return this.__email_unique_regra(params)
             }
@@ -302,17 +302,17 @@ export const validacaoMixin = {
         __email_regra(){
             let v = this.value
             let msg = 'Digite um email válido (ex.: usuario@servidor.com).'
-            return v => this.$buscarRegExp('email').test(v) || msg
+            return v => this.$regex('email').test(v) || msg
         },
         __cpf_regra(){
             let v = this.value
             let msg = 'Digite um CPF válido (ex.: 000.000.000-00).'
-            return v => this.$buscarRegExp('cpf').test(v) || msg
+            return v => this.$regex('cpf').test(v) || msg
         },
         __cnpj_regra(){
             let v = this.value
             let msg = 'Digite um CNPJ válido (ex.: 00.000.000/0000-00).'
-            return v => this.$buscarRegExp('cnpj').test(v) || msg
+            return v => this.$regex('cnpj').test(v) || msg
         },
         __cpf_cnpj_regra(){
 
@@ -327,12 +327,12 @@ export const validacaoMixin = {
         __date_regra(){
             let v = this.value
             let msg = 'Digite uma data válida'
-            return v => this.$buscarRegExp('date_ptbr').test(v) || msg
+            return v => this.$regex('date_ptbr').test(v) || msg
         },
         __time_regra(){
             let v = this.value
             let msg = 'Digite um tempo válido'
-            return v => this.$buscarRegExp('time').test(v) || msg
+            return v => this.$regex('time').test(v) || msg
         },
         __datahora_regra(){
             let datahora = this.value
@@ -342,8 +342,8 @@ export const validacaoMixin = {
             if(datahora){
                 let parts = datahora.split(' ')
 
-                let date_validate = this.$buscarRegExp('date_ptbr').test(parts[0])
-                let time_validate = this.$buscarRegExp('time').test(parts[1])
+                let date_validate = this.$regex('date_ptbr').test(parts[0])
+                let time_validate = this.$regex('time').test(parts[1])
 
                 if( ! date_validate){
                     msg = 'Digite uma data válida'
