@@ -305,9 +305,29 @@ export const validacaoMixin = {
             return v => this.$regex('email').test(v) || msg
         },
         __cpf_regra(){
-            let v = this.value
-            let msg = 'Digite um CPF válido (ex.: 000.000.000-00).'
-            return v => this.$regex('cpf').test(v) || msg
+            let cpf_validado = true
+            let strCPF = this.value.match( /\d+/g ).join([])
+
+            var Soma;
+            var Resto;
+            Soma = 0;
+            if (strCPF == "00000000000") cpf_validado=false;
+
+            for (let i=1; i<=9; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11))  Resto = 0;
+            if (Resto != parseInt(strCPF.substring(9, 10)) ) cpf_validado=false;
+
+            Soma = 0;
+            for (let i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11))  Resto = 0;
+            if (Resto != parseInt(strCPF.substring(10, 11) ) ) cpf_validado=false;
+
+            let msg = 'Digite um CPF válido'
+            return v => cpf_validado || msg
         },
         __cnpj_regra(){
             let v = this.value
