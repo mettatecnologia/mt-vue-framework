@@ -66,7 +66,7 @@ import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
 export default {
     mixins: [inputBaseMixin],
     props:{
-        rules:String, label:String, id:String, type:String, placeholder:String, name:String, disabled:Boolean, readonly:Boolean,
+        label:String, id:String, type:String, placeholder:String, name:String, disabled:Boolean, readonly:Boolean,
 
         autofocus:Boolean,
         counter:{type:[Boolean, Number, String]},

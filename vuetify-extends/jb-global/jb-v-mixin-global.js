@@ -4,11 +4,17 @@ export const globalMixin = {
         value:String,
     },
     data() {return{
-        atualizar_componente:false
+        atualizar_componente:false,
+        value_data:this.value,
     }},
     computed: {
-        vmodel(){
-            return this.value
+        vmodel: {
+            get(){
+                return this.value || this.value_data
+            },
+            set(v){
+                this.value_data = v
+            },
         },
         vuetify_ref(){
             return this.ref || `uid_${this._uid}`

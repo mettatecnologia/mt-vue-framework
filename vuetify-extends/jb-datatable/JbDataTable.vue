@@ -89,8 +89,8 @@ import {globalMixin} from '../jb-global/jb-v-mixin-global'
 export default {
     mixins: [globalMixin],
     props:{
-        headers:String,
-        items:String,
+        headers:{type:[String,Array]},
+        items:{type:[String,Array]},
     },
     computed:{
         vuetify_ref(){

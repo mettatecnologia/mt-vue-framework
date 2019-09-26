@@ -12,7 +12,7 @@ $array = [
 <v-row align="start">
      <v-col cols="12" v-for="(blocos, tipo) in array_itens" :key="tipo">
 
-        <v-row v-if="tipo" :key="i" >
+        <v-row v-if="tipo">
             <v-col>
                 <v-divider></v-divider>
                 <v-row justify="end"><span class="title font-italic grey--text mr-3">{{tipo}}</span></v-row>

@@ -1,10 +1,12 @@
 <template>
     <div>
         <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" :color="color" dark app fixed >
-            <v-toolbar-content style="width: 300px" class="ml-0 pl-3">
-                <v-toolbar-side-icon v-if="comMenu" @click.stop="abrir_menudrawer = !abrir_menudrawer"></v-toolbar-side-icon>
-                <span class="hidden-sm-and-down"><v-btn text :href="href" class="v-btn-remove-fundo-before">{{titulo}}</v-btn></span>
-            </v-toolbar-content>
+            <v-toolbar-items>
+                <v-app-bar-nav-icon v-if="comMenu" @click.stop="abrir_menudrawer = !abrir_menudrawer"></v-app-bar-nav-icon>
+                <slot name="titulo">
+                    <span class="hidden-sm-and-down pt-3"><v-btn text :href="href" class="v-btn-remove-fundo-before">{{titulo}}</v-btn></span>
+                </slot>
+            </v-toolbar-items>
 
             <slot></slot>
 

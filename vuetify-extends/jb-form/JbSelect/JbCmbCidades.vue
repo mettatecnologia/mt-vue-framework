@@ -20,7 +20,10 @@
 
 import axios from 'axios'
 
+import {globalMixin}    from '../../jb-global/jb-v-mixin-global'
+
 export default {
+    mixins:[globalMixin],
      props:{
         uf:String,
     },

@@ -6,7 +6,7 @@
 
         <v-form
             :ref="vuetify_ref"
-            v-model="valid"
+            v-model="vmodel"
             v-on="this.$listeners"
             v-bind="this.$attrs"
 
@@ -24,7 +24,7 @@
 
             <slot name="botoes">
                 <v-row justify="center">
-                    <v-btn type="submit" color="primary" :disabled="validar && !valid" class="mr-1" >{{btnEnviarText}}</v-btn>
+                    <v-btn type="submit" color="primary" :disabled="validar && !vmodel" class="mr-1" >{{btnEnviarText}}</v-btn>
                     <v-btn @click="limpar" class="ml-1">{{btnLimparText}}</v-btn>
                 </v-row>
             </slot>
@@ -35,98 +35,103 @@
 
 <script>
 
-    export default {
-        props: {
-            /** ======= FORMULARIO */
-            validar:Boolean,
-            validarCampos:{type:Boolean, default:true},
-            resetValidation:Boolean,
-            cancelarActionSubmit:{type:Boolean},
+import {globalMixin}    from '../jb-global/jb-v-mixin-global'
 
-            /** ======= BOTOES */
-            btnEnviarText:{type:String, default:'Enviar'},
-            btnLimparText:{type:String, default:'Limpar'},
+export default {
+    mixins:[globalMixin],
+    props: {
+        value:Boolean,
+        /** ======= FORMULARIO */
+        validar:Boolean,
+        validarCampos:{type:Boolean, default:true},
+        resetValidation:Boolean,
+        cancelarActionSubmit:{type:Boolean},
+        method:String,action:String,csrf:String,
 
-            /** ======= MENSAGENS */
-            mensagens:{type:[Array, String], default:() => ([])},
-            mensagensTipo:{type:String},
-            mensagensDetalhes:String,
-        },
-        computed: {
-            messages: {
-                get(){
-                    return this.formataMensagensDeAlerta()
-                },
-                set(aberto){
-                    if(!aberto){
-                        this.mensagens = {}
-                    }
+        /** ======= BOTOES */
+        btnEnviarText:{type:String, default:'Enviar'},
+        btnLimparText:{type:String, default:'Limpar'},
 
-                },
+        /** ======= MENSAGENS */
+        mensagens:{type:[Array, String], default:() => ([])},
+        mensagensTipo:{type:String},
+        mensagensDetalhes:String,
+    },
+    computed: {
+        messages: {
+            get(){
+                return this.formataMensagensDeAlerta()
             },
-            vuetify_ref(){
-                return this.ref || 'v-form'
+            set(aberto){
+                if(!aberto){
+                    this.mensagens = {}
+                }
+
+            },
+        },
+        vuetify_ref(){
+            return this.ref || 'v-form'
+        }
+    },
+    created(){
+        Object.assign(this, this.$attrs)
+    },
+    mounted(){
+        if(this.validarCampos)
+        {
+            this.ativarValidacaoCampos()
+        }
+    },
+    methods: {
+        limpar(){
+            this.$refs[this.vuetify_ref].reset();
+        },
+        resetarValidacao(){
+            this.$refs[this.vuetify_ref].resetValidation();
+        },
+        submit(e) {
+            this.$emit('submit', e, this.$refs[this.vuetify_ref].validate());
+
+            let form = this.$refs[this.vuetify_ref];
+            let tem_action = !!this.action
+
+            if( ! tem_action || this.cancelarActionSubmit || (this.validar && !this.$refs[this.vuetify_ref].validate())){
+                e.preventDefault();
             }
         },
-        created(){
-            Object.assign(this, this.$attrs)
-        },
-        mounted(){
-            if(this.validarCampos)
-            {
-                this.ativarValidacaoCampos()
+        formataMensagensDeAlerta(){
+            let mensagens = this.mensagens
+
+            let retorno = null
+
+            if(typeof mensagens=='string' && /[a-z0-9]/i.test(mensagens)){
+
+                if(this.$isJson(mensagens)){
+                    retorno = JSON.parse(mensagens)
+                }
+                else if(typeof mensagens=='object' && Object.keys(mensagens).length){
+                    retorno = mensagens
+                }
+                else if(typeof mensagens=='string' && /[a-z0-9]/i.test(mensagens)){
+                    retorno = {0: mensagens}
+                }
+                else {
+                    return ;
+                }
+
+                return retorno;
             }
         },
-        methods: {
-            limpar(){
-                this.$refs[this.vuetify_ref].reset();
-            },
-            resetarValidacao(){
-                this.$refs[this.vuetify_ref].resetValidation();
-            },
-            submit(e) {
-                this.$emit('submit', e, this.$refs[this.vuetify_ref].validate());
+        ativarValidacaoCampos(){
+            let inputs = this.$refs[this.vuetify_ref].inputs
+            for (const i in inputs) {
+                const input = inputs[i];
+                input.$parent.validar = true
+            }
 
-                let form = this.$refs[this.vuetify_ref];
-                let tem_action = !!this.action
+            this.$refs[this.vuetify_ref].resetValidation();
 
-                if( ! tem_action || this.cancelarActionSubmit || (this.validar && !this.$refs[this.vuetify_ref].validate())){
-                    e.preventDefault();
-                }
-            },
-            formataMensagensDeAlerta(){
-                let mensagens = this.mensagens
-
-                let retorno = null
-
-                if(typeof mensagens=='string' && /[a-z0-9]/i.test(mensagens)){
-
-                    if(this.$isJson(mensagens)){
-                        retorno = JSON.parse(mensagens)
-                    }
-                    else if(typeof mensagens=='object' && Object.keys(mensagens).length){
-                        retorno = mensagens
-                    }
-                    else if(typeof mensagens=='string' && /[a-z0-9]/i.test(mensagens)){
-                        retorno = {0: mensagens}
-                    }
-                    else {
-                        return ;
-                    }
-
-                    return retorno;
-                }
-            },
-            ativarValidacaoCampos(){
-                let inputs = this.$refs[this.vuetify_ref].inputs
-                for (const i in inputs) {
-                    const input = inputs[i];
-                    input.$parent.validar = true
-                }
-
-                this.$refs[this.vuetify_ref].resetValidation();
-
-            },
         },
-    }
+    },
+}
  </script>

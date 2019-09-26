@@ -14,7 +14,10 @@
 
 <script>
 
+import {globalMixin}    from '../../jb-global/jb-v-mixin-global'
+
 export default {
+    mixins:[globalMixin],
     data() {return {
         ufs:[
             {text:'AC', value:'AC'},

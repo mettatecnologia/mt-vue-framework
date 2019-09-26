@@ -20,7 +20,7 @@ import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
 export default {
     mixins: [inputBaseMixin],
     props:{
-        unique:String,
+        unique:{type:[String,Object,Array]},
     },
     computed:{
         regras_cp(){

@@ -148,18 +148,7 @@ export default {
                 this.time_picker = v
                 v = [this.date_picker,this.time_picker].join(' ')
             }
-
-            // this.value = v
-
             this.$emit('input', v)
-
-            // console.log('time', this.time_picker);
-            // if(this.picker_tipo=='datetime'){
-            //     this.$emit('input', [this.date_picker,this.time_picker].join(' '))
-            // }
-            // else{
-            //     this.$emit('input', v)
-            // }
         },
         timeMinutePickerEmitClick(v){
             if(this.picker_tipo=='datetime'){ this.tabs.index = 0 }
@@ -185,10 +174,14 @@ export default {
         },
         setarDataHoje(){
             this.date_picker = moment().format('YYYY-MM-DD')
+
             this.$emit('input', this.date_picker)
+            this.$emit('click:date', this.date_picker)
         },
         setarHoraAgora(){
             this.time_picker = moment().format('HH:mm')
+
+            this.$emit('click:minute', this.time_picker)
             this.$emit('input', this.time_picker)
         },
         setarDataHoraAgora(){
@@ -196,7 +189,10 @@ export default {
             this.time_picker = moment().format('HH:mm')
             this.tabs.index = 0
 
-            this.$emit('input', [this.date_picker,this.time_picker].join(' '))
+            let datetime = [this.date_picker,this.time_picker].join(' ')
+
+            this.$emit('click:date', datetime)
+            this.$emit('input', datetime)
         },
     }
 }

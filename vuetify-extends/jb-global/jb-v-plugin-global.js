@@ -67,7 +67,8 @@ export default {
             }
         }
         Vue.prototype.$buscaItemDatatable = function (datatable, valor_procurado, campo_de_busca='value', case_sensitive=false) {
-            if(valor_procurado==undefined){
+
+            if( ! valor_procurado || valor_procurado==undefined){
                 return {
                     index: -1,
                     result: null,
@@ -80,11 +81,14 @@ export default {
 
             let indexItem = -1;
             let result = datatable.filter( dtItem => {
-                let dtitem_valor = ! case_sensitive ? dtItem[campo_de_busca].toString().toUpperCase() : dtItem[campo_de_busca]
+                let item = dtItem[campo_de_busca]
+                if(item){
+                    let dtitem_valor = ! case_sensitive ? item.toString().toUpperCase() : item
 
-                if(dtitem_valor == valor_procurado){
-                    indexItem = datatable.indexOf(dtItem)
-                    return datatable[indexItem];
+                    if(dtitem_valor == valor_procurado){
+                        indexItem = datatable.indexOf(dtItem)
+                        return datatable[indexItem];
+                    }
                 }
             });
 
