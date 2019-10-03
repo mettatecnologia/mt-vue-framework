@@ -25,7 +25,7 @@
             <slot name="botoes">
                 <v-row justify="center">
                     <v-btn type="submit" color="primary" :disabled="validar && !vmodel" class="mr-1" >{{btnEnviarText}}</v-btn>
-                    <v-btn @click="limpar" class="ml-1">{{btnLimparText}}</v-btn>
+                    <v-btn @click="resetForm" class="ml-1">{{btnLimparText}}</v-btn>
                 </v-row>
             </slot>
         </v-form>
@@ -83,7 +83,7 @@ export default {
         }
     },
     methods: {
-        limpar(){
+        resetForm(){
             this.$refs[this.vuetify_ref].reset();
         },
         resetarValidacao(){

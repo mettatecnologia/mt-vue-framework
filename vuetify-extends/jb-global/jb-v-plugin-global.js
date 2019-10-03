@@ -107,6 +107,10 @@ export default {
 
         // ARRAY
         Vue.prototype.$criarArrayParaCombobox = function (obj, campo_text, campo_value){
+            if( ! obj.length){
+                return []
+            }
+
             let primeira_key = Object.keys(obj)[0]
             let primeiro_item = obj[primeira_key]
             let obj_valido = {}.hasOwnProperty.call(primeiro_item, campo_text) && {}.hasOwnProperty.call(primeiro_item, campo_value)

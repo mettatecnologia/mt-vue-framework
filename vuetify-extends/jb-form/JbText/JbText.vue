@@ -84,12 +84,12 @@ export default {
     methods: {
         pegarDinheiro(value){
             value = value.match( this.$regex('currency') ).join([]).split('.').join('').split(',').join('.')
-            value = parseFloat(value)
+            value = parseFloat(value).toFixed(2)
             return value
         },
         pegarPorcentagem(value){
             value = value.match( this.$regex('currency') ).join([]).split(',').join('.')
-            value = parseFloat(value)
+            value = parseFloat(value).toFixed(2)
             return value
         },
         pegarDatahora(value){

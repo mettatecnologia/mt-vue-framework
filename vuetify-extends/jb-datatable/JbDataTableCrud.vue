@@ -14,12 +14,19 @@
         :ref="vuetify_ref"
     >
 
-        <template v-slot:top>
-            <v-toolbar flat color="white">
-                <v-btn v-if="podeAdicionar" color="primary" dark class="mb-2" @click="novo()">{{toolbarBtnTitulo || tituloNovo || 'Adicionar'}}</v-btn>
-                <v-spacer></v-spacer>
-                <v-text-field v-model="datatable.search" append-icon="search" label="Search" single-line hide-details ></v-text-field>
-            </v-toolbar>
+        <template v-slot:top="{items, options, groupedItems, updateOptions, sort, group}">
+            <slot name="top.prepend" :items="items" :options="options" :groupedItems="groupedItems" :updateOptions="updateOptions" :sort="sort" :group="group" ></slot>
+
+            <slot name="top" :items="items" :options="options" :groupedItems="groupedItems" :updateOptions="updateOptions" :sort="sort" :group="group" >
+                <v-toolbar flat color="white">
+                    <v-btn v-if="podeAdicionar" color="primary" dark class="mb-2" @click="novo()"> <v-icon >add</v-icon> {{toolbarBtnTitulo || tituloNovo || 'Adicionar'}}</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-text-field v-model="datatable.search" append-icon="search" label="Pesquisar" single-line hide-details ></v-text-field>
+                </v-toolbar>
+            </slot>
+
+            <slot name="top.append" :items="items" :options="options" :groupedItems="groupedItems" :updateOptions="updateOptions" :sort="sort" :group="group" ></slot>
+
         </template>
 
         <template v-slot:item.actions="{ item, header, value }" >
@@ -27,9 +34,9 @@
 
                 <slot name="item.prepend-actions" :item="item" :header="header" :value="value" ></slot>
 
-                <jb-icon v-if="podeEditar" color="orange" small tt-text="Editar" @click="editar(item)" > edit </jb-icon>
-                <jb-icon v-if="podeDeletar" color="red" small tt-text="Deletar" @click="deletarConfirm(item)" > delete </jb-icon>
+                <jb-icon v-if="podeEditar" small tt-text="Editar" @click="editar(item)" > edit </jb-icon>
                 <jb-icon v-if="podeAtivarInativar" small :tt-text="item.ativo ? 'Inativar' : 'Ativar'" @click="ativarInativarConfirm(item)" > {{ item.ativo ? 'fas fa-level-down-alt' : 'fas fa-level-up-alt'}} </jb-icon>
+                <jb-icon v-if="podeDeletar" color="red" small tt-text="Deletar" @click="deletarConfirm(item)" > delete </jb-icon>
 
                 <slot name="item.append-actions" :item="item" :header="header" :value="value" ></slot>
 
@@ -39,6 +46,15 @@
     </jb-datatable>
 
     <jb-dialog v-model="dialog.mostrar" :titulo="formTitulo" :fullscreen="dialogFullscreen" :persistent="dialogPersistent" :max-width="dialogMaxWidth || '750px'">
+        <template v-slot:top>
+            <span class="headline">{{ formTitulo }}</span>
+            <v-spacer></v-spacer>
+
+            <!-- <v-switch v-model="dialog.manter_aberto" label="Manter aberto" ></v-switch> -->
+            <jb-icon tt-text="Manter aberto" @click="v=>{dialog.manter_aberto = !dialog.manter_aberto}" :color="dialog.manter_aberto ? 'primary' :  'grey lighten-2'" class="mr-2"> fas fa-thumbtack </jb-icon>
+            <jb-icon tt-text="Fechar" @click="fecharDialog()">fas fa-times</jb-icon>
+        </template>
+
 
         <jb-loading v-model="loading.mostrar"></jb-loading>
 
@@ -64,7 +80,10 @@
 
 <script>
 
+import {globalMixin} from '../jb-global/jb-v-mixin-global'
+
 export default {
+    mixins:[globalMixin],
     props:{
         podeAdicionar:{type:Boolean, default:true},
         podeEditar:{type:Boolean, default:true},
@@ -100,6 +119,7 @@ export default {
         dialogMaxWidth:String,
         dialogFullscreen:Boolean,
         dialogMostrar:Boolean,
+        dialogManterAberto:Boolean,
 
         //actions
         preNovo:{type:Function, default:v=>(v)},
@@ -115,7 +135,6 @@ export default {
 
         //model
         vueapiqueryModel:Object,
-        value:Object,
         httpUrl:String,
 
     },
@@ -125,6 +144,7 @@ export default {
 
             dialog:{
                 mostrar: this.dialogMostrar,
+                manter_aberto: this.dialogManterAberto,
             },
             form: {
                 valid: false,
@@ -183,8 +203,7 @@ export default {
                 let jb_form = this.$refs['jb-form']
                 let vform = this.$refs['jb-form'].$refs[jb_form.vuetify_ref]
 
-                Object.assign(this.value, this.modeloDefaultSave)
-
+                vform.reset()
                 vform.resetValidation()
             }
         },
@@ -192,13 +211,17 @@ export default {
             this.dialog.mostrar = true
         },
         fecharDialog() {
-            this.dialog.mostrar = false
+            if( ! this.dialog.manter_aberto){
+                this.dialog.mostrar = false
+            }
             this.initialize()
         },
 
         // ==== Operações das Actions do Datatable
         novo(){
             this.reiniciarForm()
+            Object.assign(this.value, this.modeloDefaultSave)
+
             this.preNovo()
             this.abrirDialog()
         },

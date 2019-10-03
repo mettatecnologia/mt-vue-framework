@@ -25,18 +25,26 @@ export default {
         vuetify_ref(){
             return this.ref || 'v-select'
         },
-        vmodel(){
-            if(this.itens && typeof this.itens[0] == 'object'){
-                let result = this.$buscaItemDatatable(this.itens,this.value)
-                if(result){ return result.result }
-            }
+        vmodel:{
+            get(){
+                let value = this.value || this.value_data
 
-            if(this.retornoKey && this.$hasKey(this.retornoKey,this.value)){
-                return this.value[this.retornoKey]
-            }
-            else {
-                return this.value
-            }
+                if(this.itens && typeof this.itens[0] == 'object'){
+                    let result = this.$buscaItemDatatable(this.itens,value)
+                    if(result){ return result.result }
+                }
+
+                if(this.retornoKey && this.$hasKey(this.retornoKey,value)){
+                    return value[this.retornoKey]
+                }
+                else {
+                    return value
+                }
+            },
+            set(v){
+                this.value_data = v
+            },
+
         },
         itens(){
             return this.items

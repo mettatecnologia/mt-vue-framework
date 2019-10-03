@@ -98,23 +98,28 @@ export default {
         vuetify_ref(){
             return this.ref || 'jb-text-datetime'
         },
-        vmodel () {
-            let value = moment(this.value)
+        vmodel:{
+            get(){
+                let value = moment(this.value)
 
-            if(value.isValid()){
-                if(this.picker.tipo == 'datetime'){
-                    return value.format('DD/MM/YYYY HH:mm')
+                if(value.isValid()){
+                    if(this.picker.tipo == 'datetime'){
+                        return value.format('DD/MM/YYYY HH:mm')
+                    }
+                    if(this.picker.tipo == 'date')
+                    {
+                        return value.format('DD/MM/YYYY')
+                    }
+                    else if(this.picker.tipo == 'time') {
+                        return this.value
+                    }
                 }
-                if(this.picker.tipo == 'date')
-                {
-                    return value.format('DD/MM/YYYY')
-                }
-                else if(this.picker.tipo == 'time') {
-                    return this.value
-                }
-            }
 
-            return null
+                return null
+            },
+            set(v){
+                this.value_data = v
+            },
         },
         rules_validacao()
         {

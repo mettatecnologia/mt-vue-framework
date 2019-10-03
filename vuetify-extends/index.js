@@ -1,6 +1,7 @@
 require('./jb-alert');
 require('./jb-auth');
 require('./jb-barrasuperior');
+require('./jb-btn');
 require('./jb-calendar');
 require('./jb-datatable');
 require('./jb-dialog');

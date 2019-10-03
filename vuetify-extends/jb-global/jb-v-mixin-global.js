@@ -1,7 +1,7 @@
 
 export const globalMixin = {
     props:{
-        value:String,
+        value:{type:[String,Number,Boolean,Array,Object,Date,Function,Symbol]},
     },
     data() {return{
         atualizar_componente:false,

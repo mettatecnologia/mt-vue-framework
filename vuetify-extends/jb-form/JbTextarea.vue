@@ -1,7 +1,7 @@
 <template>
 
         <v-textarea
-            :ref="ref"
+            :ref="vuetify_ref"
             v-model="vmodel"
             v-on="this.$listeners"
             v-bind="this.$attrs"

@@ -8,10 +8,11 @@
 
         <v-card>
             <v-card-title>
-                <span class="headline">{{ getTitulo }}</span>
-                <v-spacer></v-spacer>
-                <!-- <jb-icon v-if="this.$listeners.fechar" tt-text="Fechar" @click="v=>(this.$emit('fechar', false))">fas fa-times</jb-icon> -->
-                <jb-icon tt-text="Fechar" @click="fechar">fas fa-times</jb-icon>
+                <slot name="top">
+                    <span class="headline">{{ getTitulo }}</span>
+                    <v-spacer></v-spacer>
+                    <jb-icon tt-text="Fechar" @click="fechar">fas fa-times</jb-icon>
+                </slot>
             </v-card-title>
 
             <v-card-text>
@@ -46,10 +47,10 @@
                     this.$emit('fechar', this);
                 }
                 else {
-                    this.value = false
+                    this.value_data = false
                 }
 
-                this.$emit('input', this.value);
+                this.$emit('input', this.value_data);
             },
         }
 
