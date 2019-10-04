@@ -7,12 +7,18 @@
             v-bind="this.$attrs"
         >
             <legend class="theme--light v-label">{{legend_comp}}</legend>
+
             <slot></slot>
 
-            <div id="messages" class="caption">
-                <slot name="messages"> {{messages}} </slot>
+            <div class="v-text-field__details">
+                <div class="v-messages theme--light " role="alert">
+                    <div class="v-messages__wrapper">
+                        <div class="v-messages__message">
+                            <slot name="messages"> {{messages}} </slot>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </fieldset>
 
 </template>
@@ -27,8 +33,11 @@ export default {
         legend:String,
     },
     data(){return {
+        value_inicial:this.$copiarObjeto(this.value),
         messages:null,
         Form:null,
+        Fieldset:null,
+        resetando:false,
     }},
     computed:{
         vuetify_ref(){
@@ -39,15 +48,19 @@ export default {
         },
     },
     mounted(){
+        this.Fieldset = this.$refs[this.vuetify_ref]
         this.Form = this.buscarForm(this)
-        this.$set(this.Form.errorBag, this._uid, true)
+
+        this.$set(this.Form.inputs, this.Form.inputs.length, this)
     },
     watch:{
         value(v){
-            if(this.regras){
+            if(this.regras && !this.resetando){
                 this.verificarValidacao()
             }
+            this.resetando = false
         },
+
     },
     methods:{
         buscarForm(Inicio){
@@ -64,8 +77,18 @@ export default {
                 return null
             }
         },
+        emitInput(value){
+            this.$emit('input',value)
+        },
+        reset(){
+            this.resetando = true
+            this.emitInput(this.value_inicial)
+
+        },
+        resetValidation(){
+            this.aplicarValidacaoResultado(false, null);
+        },
         verificarValidacao(){
-            let Fieldset = this.$refs[this.vuetify_ref]
 
             let validacoes = this.vmodelRules
             let erro = false
@@ -81,6 +104,13 @@ export default {
                 }
             }
 
+            this.aplicarValidacaoResultado(erro, result);
+
+            return result
+        },
+        aplicarValidacaoResultado(erro, mensagem){
+            let Fieldset = this.Fieldset
+
             if(erro){
                 Fieldset.classList.add('error--text')
             }
@@ -88,11 +118,10 @@ export default {
                 Fieldset.classList.remove('error--text')
             }
 
-            this.messages = result
+            this.messages = mensagem
             this.Form.errorBag[this._uid] = erro
-
-            return result
         }
+
     }
 }
 </script>
@@ -112,6 +141,9 @@ export default {
 
 .jb-fieldset.error--text {
     border-color: #ff5252
+}
+.jb-fieldset.error--text .v-messages {
+    color: #ff5252
 }
 .jb-fieldset.error--text > legend,
 .jb-fieldset.error--text div.v-input:not(.rules-ignore) * {
