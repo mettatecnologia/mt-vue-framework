@@ -20,6 +20,11 @@ export const globalMixin = {
             return this.ref || `uid_${this._uid}`
         }
     },
+    watch:{
+        value(v){
+            this.value_data = v
+        }
+    },
     methods: {
         atualizarComponente(){
             this.atualizar_componente = ! this.atualizar_componente

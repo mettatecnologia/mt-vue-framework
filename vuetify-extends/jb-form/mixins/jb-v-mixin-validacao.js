@@ -184,6 +184,7 @@ export const validacaoMixin = {
          * ======================
          */
         __required_regra(subregras){
+
             let v = this.value
             let msg = ''
             let result = true
@@ -211,6 +212,11 @@ export const validacaoMixin = {
                             msg = 'Pelo menos um desses campos é obrigatório: ' + [this.label || this.id || this.name].concat(campos_nomes_exibicao).join(', ')
                             result = () => array_sem_valores_null.length > 0 || msg
 
+                            break;
+                        }
+                        case 'array': {
+                            let msg = 'Pelo menos uma opção deve ser selecionada'
+                            result = v => v.length > 0 || msg
                             break;
                         }
 

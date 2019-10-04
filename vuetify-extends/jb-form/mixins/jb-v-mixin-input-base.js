@@ -7,7 +7,7 @@ export const inputBaseMixin = {
     props:{
         validarNaCriacao:Boolean,
         mascara:String,
-        regras:{type:[String,Array]}
+        regras:{type:[String,Array,Object]}
     },
     data() {return{
         error_messages:null,
