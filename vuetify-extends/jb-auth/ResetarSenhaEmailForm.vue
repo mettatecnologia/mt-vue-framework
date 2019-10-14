@@ -4,7 +4,7 @@
 
     <v-row align="center" justify="start" class="primary ma-0" >
         <v-col>
-            <jb-btn-voltar />
+            <jb-btn-voltar fab small />
             <div class="white--text pa-0 ma-0 ml-1 mt-8"><h4>Recuperar Senha</h4></div>
         </v-col>
     </v-row>

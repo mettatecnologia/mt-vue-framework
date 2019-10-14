@@ -17,9 +17,9 @@ export default {
     mixins:[globalMixin],
     props:{
         elevation:{type:[Number, String], default:1},
-        fab:{type:Boolean, default:true},
+        fab:Boolean,
         icon:Boolean,
-        small:{type:Boolean, default:true},
+        small:Boolean,
         tile:Boolean,
         color:{type:String, default:'white'},
 
