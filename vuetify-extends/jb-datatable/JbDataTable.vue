@@ -48,13 +48,15 @@
         <template v-slot:item="{ item, select, isSelected, expand, isExpanded, headers, index }" >
             <tr>
                 <template v-for="(header, key) in headers" >
-                    <td v-if="header.value!='actions'" :class="pegarClassePeloAlign(header)" :key="key">{{ aplicarHeaderAlteracoes(header, item[header.value]) }}</td>
-                    <template v-else>
-                        <td :class="pegarClassePeloAlign(header)" :key="key">
 
+                    <td :class="pegarClassePeloAlign(header)" :key="key">
+                        <template v-if="header.value!='actions'">
+                            {{ aplicarHeaderAlteracoes(header, item[header.value]) }}
+                        </template>
+                        <template v-else>
                             <slot name="item.actions" :item="item" :header="header" :value="header.value"></slot>
-                        </td>
-                    </template>
+                        </template>
+                    </td>
 
                 </template>
             </tr>
@@ -98,11 +100,11 @@ export default {
         }
     },
     methods: {
-        aplicarHeaderMetodo(metodo, value){
-            return value = metodo(value)
+        aplicarHeaderMetodo(method, value){
+            return value = method(value)
         },
-        aplicarHeaderFormato(formato, value){
-            switch (formato) {
+        aplicarHeaderFormato(mask, value){
+            switch (mask) {
                 case 'datetime':
                     case 'date':
                         if(value){ value = this.$passaDatetimeParaPtbr(value) }
@@ -118,16 +120,43 @@ export default {
             }
             return value
         },
-        aplicarHeaderAlteracoes(header, value){
-            let metodo = header.metodo || header.method
-            let formato = header.format || header.formato
+        aplicarHeaderType(type, value){
 
-            if(metodo){
-                value = this.aplicarHeaderMetodo(metodo, value)
+            if(value !== null){
+                switch (type) {
+                    case 'boolean':
+                        value = !!value
+                        break;
+                    case 'string':
+                        value = value.toString();
+                        break;
+                    case 'int':
+                        value = parseInt(value)
+                        break;
+                    case 'float':
+                        value = parseFloat(value)
+                        break;
+                }
             }
-            if(formato){
-                value = this.aplicarHeaderFormato(formato, value)
+
+            return value
+        },
+        aplicarHeaderAlteracoes(header, value){
+
+            let method = header.method
+            let mask = header.mask
+            let type = header.type
+
+            if(type){
+                value = this.aplicarHeaderType(type, value)
             }
+            if(method){
+                value = this.aplicarHeaderMetodo(method, value)
+            }
+            if(mask){
+                value = this.aplicarHeaderFormato(mask, value)
+            }
+
             return value
         },
         pegarClassePeloAlign(header){
@@ -146,24 +175,6 @@ export default {
             return 'text-center'
 
         },
-        // formataItemsPeloHeader(){
-
-        //     let vuetify_comp = this.$refs[this.vuetify_ref]
-        //     let headers = this.headers
-
-        //     let items = this.items
-
-        //     for (const key_item in items) {
-        //         const item = items[key_item];
-        //         for (const key_header in headers) {
-        //             const header = headers[key_header];
-        //             if(header.method || header.metodo || header.format || header.formato){
-        //                 item[header.value] = this.aplicarHeaderAlteracoes(header, item[header.value])
-        //             }
-        //         }
-        //     }
-
-        // },
     },
 
 }

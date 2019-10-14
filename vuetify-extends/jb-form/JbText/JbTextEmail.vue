@@ -15,12 +15,13 @@
 
 <script>
 
-import {inputBaseMixin} from '../mixins/jb-v-mixin-input-base'
+import {globalMixin}    from '../../jb-global/jb-v-mixin-global'
 
 export default {
-    mixins: [inputBaseMixin],
+    mixins: [globalMixin],
     props:{
-        unique:{type:[String,Object,Array]},
+        unique:{type:[Boolean,Object,Array]},
+        regras:{type:[String,Array,Object]},
     },
     computed:{
         regras_cp(){

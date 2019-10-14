@@ -166,9 +166,10 @@ export const validacaoMixin = {
             for (const i in inputs) {
                 const Input = inputs[i];
 
-                let input = Input._props
+                let id = Input._props.id
+                let name = Input.$attrs.name
 
-                if(input.id == idOuName || input.name == idOuName )
+                if(id == idOuName || name == idOuName )
                 {
                     return Input
                 }
@@ -272,24 +273,30 @@ export const validacaoMixin = {
         },
         __match_regra(campos){
 
-            let v = this.value
+            // let v = this.value
             let values = []
             let campos_nomes_exibicao = []
+
             if(this.$typeof(campos,'string')){
                 campos = [campos]
             }
 
             for (const i in campos) {
                 const Input = this.getFormInputComponent(campos[i]);
-                const input = Input ? Input._props : null
-                if(input)
+
+                if(Input)
                 {
                     let this_value = this.value ? this.value.trim() : ''
                     let input_value = Input.value ? Input.value.trim() :  ''
 
                     campos_nomes_exibicao.push(Input.$parent.label || Input.$parent.id || Input.$parent.name)
+
                     if( this_value == input_value ){
-                        values.push(input_value)
+
+                        values.push(this.value)
+                        if( ! Input.valid){
+                            Input.$parent.atualizarComponente()
+                        }
                     }
 
                 }

@@ -3,7 +3,7 @@
 
     <jb-datatable
         :headers="headers"
-        :items="datatable.items"
+        :items="datatableItems"
         :search="datatableSearch"
         :footer-props="footerProps"
         :items-per-page="itemsPerPage"
@@ -32,13 +32,13 @@
         <template v-slot:item.actions="{ item, header, value }" >
             <div class="mr-2 mt-3">
 
-                <slot name="item.prepend-actions" :item="item" :header="header" :value="value" ></slot>
+                <slot name="item.prepend-actions" :item="item" :header="header" :value="value" :index="datatableItems.indexOf(item)" ></slot>
 
-                <jb-icon v-if="podeEditar" small tt-text="Editar" @click="editar(item)" > edit </jb-icon>
-                <jb-icon v-if="podeAtivarInativar" small :tt-text="item.ativo ? 'Inativar' : 'Ativar'" @click="ativarInativarConfirm(item)" > {{ item.ativo ? 'fas fa-level-down-alt' : 'fas fa-level-up-alt'}} </jb-icon>
-                <jb-icon v-if="podeDeletar" color="red" small tt-text="Deletar" @click="deletarConfirm(item)" > delete </jb-icon>
+                <jb-icon v-if="podeEditar" small tt-text="Editar" @click="editar(item, datatableItems.indexOf(item))" > edit </jb-icon>
+                <jb-icon v-if="podeAtivarInativar" small :tt-text="item.ativo ? 'Inativar' : 'Ativar'" @click="ativarInativarConfirm(item, datatableItems.indexOf(item))" > {{ item.ativo ? 'fas fa-level-down-alt' : 'fas fa-level-up-alt'}} </jb-icon>
+                <jb-icon v-if="podeDeletar" color="red" small tt-text="Deletar" @click="deletarConfirm(item, datatableItems.indexOf(item))" > delete </jb-icon>
 
-                <slot name="item.append-actions" :item="item" :header="header" :value="value" ></slot>
+                <slot name="item.append-actions" :item="item" :header="header" :value="value" :index="datatableItems.indexOf(item)"></slot>
 
             </div>
         </template>
@@ -93,7 +93,7 @@ export default {
         tituloNovo:String,
         tituloEditar:String,
 
-        //form
+        //---- Form
         action:String, csrf:String,
         formValid:{type:Boolean, default:true},
         formMensagens:{type:Object, default(){return{mensagens:null, tipo:null, detalhes:null}}},
@@ -108,8 +108,8 @@ export default {
         itemsPerPage:{type:Number, default:5},
         footerProps:Array,
 
-        sortBy:Array,
-        sortDesc:Array,
+        sortBy:{type:[String,Array]},
+        sortDesc:{type:[Boolean,Array]},
         multiSort:Boolean,
 
         search:String,
@@ -120,6 +120,8 @@ export default {
         dialogFullscreen:Boolean,
         dialogMostrar:Boolean,
         dialogManterAberto:Boolean,
+
+        posFechar:{type:Function, default:v=>(v)},
 
         //actions
         preNovo:{type:Function, default:v=>(v)},
@@ -167,6 +169,7 @@ export default {
     computed: {
         formTitulo() { return this.datatable.indexItem === -1 ? this.tituloNovo :  this.tituloEditar },
         datatableSearch(){ return this.search || this.datatable.search },
+        datatableItems(){ return this.datatable.items },
         vuetify_ref(){ return this.ref || 'jb-datatable' }
     },
     created () {
@@ -183,6 +186,12 @@ export default {
             },
             deep:true
         },
+        items:{
+            handler(v){
+                this.datatable.items = v
+            },
+            deep:true
+        }
     },
     methods: {
         initialize(){
@@ -215,6 +224,7 @@ export default {
                 this.dialog.mostrar = false
             }
             this.initialize()
+            this.posFechar()
         },
 
         // ==== Operações das Actions do Datatable
@@ -225,11 +235,12 @@ export default {
             this.preNovo()
             this.abrirDialog()
         },
-        editar (item) {
-            this.datatable.indexItem = this.datatable.items.indexOf(item)
+        editar (item, index) {
+            // this.datatable.indexItem = this.datatable.items.indexOf(item)
+            this.datatable.indexItem = index
 
             item = this.buscarDatatableItem(this.datatable.indexItem)
-            item = this.preEditar(item)
+            item = this.preEditar(item, index)
 
             Object.assign(this.value, item)
 
@@ -317,7 +328,7 @@ export default {
 
 
         // ==== Operações HTTP
-        ativarInativar(item){
+        ativarInativar(item, index){
 
             item = this.preAtivarInativar(item)
             item.ativo = item.ativo ? 0 : 1
@@ -334,18 +345,18 @@ export default {
                         this.form.mensagens = this.$criarObjetoMensagensForm(response.mensagens[0], response.mensagens_tipo, response.exception);
                     }
                     else {
-                        let indexItem = this.datatable.items.indexOf(item)
+                        let indexItem = this.datatable.indexItem = index
+
 
                         Object.assign(this.datatable.items[indexItem], response.dados)
                         this.$dialog.message.success(response.mensagens.join('-'), {timeout: 5000});
                     }
             });
         },
-        deletar(item){
+        deletar(item, index){
 
-            item = this.preDeletar(item)
+            item = this.preDeletar(item, index)
 
-            const index = this.datatable.items.indexOf(item)
 
             this.AxiosModel
                 .preparaRequest({url:this.httpUrl})
@@ -395,7 +406,7 @@ export default {
                         this.fecharDialog()
 
                         this.posNovo(response, item)
-                        this.posEditar(response, item)
+                        this.posEditar(response, item, indexItem)
 
                     }
             });

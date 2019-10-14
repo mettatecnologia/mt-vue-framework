@@ -24,8 +24,8 @@
 
             <slot name="botoes">
                 <v-row justify="center">
-                    <v-btn type="submit" color="primary" :disabled="validar && !vmodel" class="mr-1" >{{btnEnviarText}}</v-btn>
-                    <v-btn @click="resetForm" class="ml-1">{{btnLimparText}}</v-btn>
+                    <v-btn v-if="podeLimpar" small class="mr-1" @click="resetForm" >{{btnLimparText}}</v-btn>
+                    <v-btn v-if="podeEnviar" small type="submit" color="primary" :disabled="validar && !vmodel" class="mr-1" >{{btnEnviarText}}</v-btn>
                 </v-row>
             </slot>
         </v-form>
@@ -49,6 +49,8 @@ export default {
         method:String,action:String,csrf:String,
 
         /** ======= BOTOES */
+        podeLimpar:{type:Boolean, default:true},
+        podeEnviar:{type:Boolean, default:true},
         btnEnviarText:{type:String, default:'Enviar'},
         btnLimparText:{type:String, default:'Limpar'},
 
@@ -90,14 +92,20 @@ export default {
             this.$refs[this.vuetify_ref].resetValidation();
         },
         submit(e) {
-            this.$emit('submit', e, this.$refs[this.vuetify_ref].validate());
 
-            let form = this.$refs[this.vuetify_ref];
-            let tem_action = !!this.action
-
-            if( ! tem_action || this.cancelarActionSubmit || (this.validar && !this.$refs[this.vuetify_ref].validate())){
+            if(Object.keys(this._events).indexOf('submit') > -1){
+                // this.$emit('submit', e, this.$refs[this.vuetify_ref].validate());
                 e.preventDefault();
             }
+            else {
+                let form = this.$refs[this.vuetify_ref];
+                let tem_action = !!this.action
+
+                if( ! tem_action || this.cancelarActionSubmit || (this.validar && !this.$refs[this.vuetify_ref].validate())){
+                    e.preventDefault();
+                }
+            }
+
         },
         formataMensagensDeAlerta(){
             let mensagens = this.mensagens

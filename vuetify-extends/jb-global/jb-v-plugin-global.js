@@ -66,7 +66,7 @@ export default {
                 detalhes: detalhes
             }
         }
-        Vue.prototype.$buscaItemDatatable = function (datatable, valor_procurado, campo_de_busca='value', case_sensitive=false) {
+        Vue.prototype.$buscarItemDatatable = function (datatable, valor_procurado, campo_de_busca='value', case_sensitive=false) {
 
             if( ! valor_procurado || valor_procurado==undefined){
                 return {

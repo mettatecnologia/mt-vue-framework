@@ -79,7 +79,7 @@ export default {
             .finally(v => (this.loading.mostrar = false))
         },
         selecionarCidade(){
-            let result = this.$buscaItemDatatable(this.cidades, this.cidade_cod)
+            let result = this.$buscarItemDatatable(this.cidades, this.cidade_cod)
 
             if(result.index < 0){
                 return null

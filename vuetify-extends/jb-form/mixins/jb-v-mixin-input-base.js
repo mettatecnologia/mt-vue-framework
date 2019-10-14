@@ -7,11 +7,12 @@ export const inputBaseMixin = {
     props:{
         validarNaCriacao:Boolean,
         mascara:String,
-        regras:{type:[String,Array,Object]}
+        regras:{type:[String,Array,Object]},
     },
     data() {return{
         error_messages:null,
         validar:false,
+        vmodelRules:[],
     }},
     computed: {
         regras_validacao(){
@@ -23,10 +24,6 @@ export const inputBaseMixin = {
         label_comp(){
             return this.regras_validacao && this.label && this.eObrigatorio ? `${this.label} *` : this.label
         },
-        vmodelRules(){
-            let result = this.validar ? this.executarValidacao(this.regras_validacao) : [];
-            return result
-        },
         vmodelMask(){
             return this.mascara
         },
@@ -36,5 +33,22 @@ export const inputBaseMixin = {
 
         this.validar = this.validarNaCriacao
         this.rules = []
+    },
+    watch:{
+        validar(v){
+            if(v){
+                this.vmodelRules = this.executarValidacao(this.regras_validacao)
+            }
+        },
+        value(v){
+            if(this.validar){
+                this.vmodelRules = this.executarValidacao(this.regras_validacao)
+            }
+        },
+        atualizar_componente(v){
+            if(this.validar){
+                this.vmodelRules = this.executarValidacao(this.regras_validacao)
+            }
+        }
     },
   }

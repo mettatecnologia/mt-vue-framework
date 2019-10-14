@@ -30,7 +30,7 @@ export default {
                 let value = this.value || this.value_data
 
                 if(this.itens && typeof this.itens[0] == 'object'){
-                    let result = this.$buscaItemDatatable(this.itens,value)
+                    let result = this.$buscarItemDatatable(this.itens,value)
                     if(result){ return result.result }
                 }
 
