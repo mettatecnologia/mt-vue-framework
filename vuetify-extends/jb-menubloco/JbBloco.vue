@@ -2,7 +2,7 @@
 <div>
 
     <v-hover>
-        <v-card tile :color="color" dark :min-height="height || '140'" class="jb-bloco ma-1" slot-scope="{ hover }" >
+        <v-card tile :color="disabled ? 'grey' : color" dark :min-height="height || '140'" class="jb-bloco ma-1" slot-scope="{ hover }" >
             <v-card-text class="headline pa-0"  >
                 <v-row align="center" justify="space-between" class="px-3 pt-3">
 
@@ -25,7 +25,7 @@
                 </v-row>
             </v-card-text>
 
-            <v-card-actions class="pa-0 fixar">
+            <v-card-actions v-if="!disabled" class="pa-0 fixar">
                 <v-btn depressed small block :href="action" @click=" v => (action?null:dialog.mostrarDialog = true) " class="pa-0 caption" ><v-icon class="mr-1 body-1">{{actionIcon || 'arrow_forward'}}</v-icon> {{actionText || 'Entrar'}} </v-btn>
             </v-card-actions>
         </v-card>
@@ -59,6 +59,7 @@
           icone:String,
           action:String, actionText:String, actionIcon:String,
           hoverText:String, hoverColor:String,
+          disabled:Boolean,
 
         //---- Dialog
         dialogTitulo:String,

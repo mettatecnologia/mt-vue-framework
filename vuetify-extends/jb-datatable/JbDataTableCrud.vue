@@ -105,8 +105,8 @@ export default {
         //---- Datatable
         headers:Array,
         items:Array,
-        itemsPerPage:{type:Number, default:5},
-        footerProps:Array,
+        itemsPerPage:{type:Number, default:50},
+        footerProps:{type:Object, default:v=>({itemsPerPageOptions:[50,100,150,{"text":"Todos","value":-1}]})},
 
         sortBy:{type:[String,Array]},
         sortDesc:{type:[Boolean,Array]},

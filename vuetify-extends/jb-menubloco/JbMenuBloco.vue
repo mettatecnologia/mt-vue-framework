@@ -21,7 +21,7 @@ $array = [
 
         <v-row>
             <v-col v-for="(bloco, i) in blocos" :key="i" cols="3">
-                <jb-bloco :action="bloco.action" :action-text="bloco['action-text']" :action-icon="bloco['action-icon']" :color="bloco.color" :icone="bloco.icone">
+                <jb-bloco :action="bloco.action" :action-text="bloco['action-text']" :action-icon="bloco['action-icon']" :color="bloco.color" :icone="bloco.icone" :disabled="bloco.disabled">
                     <div :class="bloco.qtd !== null ? 'display-1 font-weight-bold':'display-1 font-weight-bold mt-4 pt-3' ">{{bloco.qtd}}</div>
                     <div class="subtitle-1">{{bloco.titulo}}</div>
 
