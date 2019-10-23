@@ -74,7 +74,7 @@ export default {
         light: Boolean,
         right: Boolean,
         size: {type:[String,Number]},
-        small: {type:Boolean, default:true},
+        small: Boolean,
         tag: {type:String, default:'i'},
         xLarge: Boolean,
         xSmall: Boolean,

@@ -36,7 +36,7 @@
 
                 <jb-icon v-if="podeEditar" small tt-text="Editar" @click="editar(item, datatableItems.indexOf(item))" > edit </jb-icon>
                 <jb-icon v-if="podeAtivarInativar" small :tt-text="item.ativo ? 'Inativar' : 'Ativar'" @click="ativarInativarConfirm(item, datatableItems.indexOf(item))" > {{ item.ativo ? 'fas fa-level-down-alt' : 'fas fa-level-up-alt'}} </jb-icon>
-                <jb-icon v-if="podeDeletar" color="red" small tt-text="Deletar" @click="deletarConfirm(item, datatableItems.indexOf(item))" > delete </jb-icon>
+                <jb-icon v-if="podeDeletar" small color="red" tt-text="Deletar" @click="deletarConfirm(item, datatableItems.indexOf(item))" > delete </jb-icon>
 
                 <slot name="item.append-actions" :item="item" :header="header" :value="value" :index="datatableItems.indexOf(item)"></slot>
 
@@ -50,26 +50,33 @@
             <span class="headline">{{ formTitulo }}</span>
             <v-spacer></v-spacer>
 
-            <!-- <v-switch v-model="dialog.manter_aberto" label="Manter aberto" ></v-switch> -->
-            <jb-icon tt-text="Manter aberto" @click="v=>{dialog.manter_aberto = !dialog.manter_aberto}" :color="dialog.manter_aberto ? 'primary' :  'grey lighten-2'" class="mr-2"> fas fa-thumbtack </jb-icon>
-            <jb-icon tt-text="Fechar" @click="fecharDialog()">fas fa-times</jb-icon>
+            <jb-icon small tt-text="Manter aberto" @click="v=>{dialog.manter_aberto = !dialog.manter_aberto}" :color="dialog.manter_aberto ? 'primary' :  'grey lighten-2'" class="mr-2"> fas fa-thumbtack </jb-icon>
+            <jb-icon small tt-text="Fechar" @click="fecharDialog()">fas fa-times</jb-icon>
         </template>
 
 
         <jb-loading v-model="loading.mostrar"></jb-loading>
 
         <jb-form validar v-model="form.valid" ref="jb-form" :mensagens="form.mensagens.mensagens" :mensagens-tipo="form.mensagens.tipo" :mensagens-detalhes="form.mensagens.detalhes" :reset="form.reset" @keyup.native.enter="submitEnter">
-            <slot name="form" :datatable_form="form"></slot>
 
-            <v-card-actions slot="botoes">
-                <v-spacer></v-spacer>
-                <slot name="botao-cancelar">
-                    <v-btn color="primary" text @click="fecharDialog()">Cancelar</v-btn>
-                </slot>
-                <slot name="botao-salvar">
-                    <v-btn color="primary" text @click="saveConfirm()" :disabled="!form.valid || !formValid">Salvar</v-btn>
-                </slot>
-            </v-card-actions>
+            <slot name="form" :datatable_form="form" :cancelar="fecharDialog" :salvar="saveConfirm"></slot>
+
+            <slot name="form.actions"  >
+                <div slot="botoes">
+                    <v-row v-if="!formOcultarBotoes" justify="end">
+                        <v-col cols="12" md="3">
+                            <v-spacer></v-spacer>
+
+                            <slot v-if="!formOcultarCancelar" name="botao-cancelar">
+                                <v-btn color="primary" text @click="fecharDialog()">Cancelar</v-btn>
+                            </slot>
+                            <slot v-if="!formOcultarSalvar" name="botao-salvar">
+                                <v-btn color="primary" text @click="saveConfirm()" :disabled="!form.valid || !formValid">Salvar</v-btn>
+                            </slot>
+                        </v-col>
+                    </v-row>
+                </div>
+            </slot>
         </jb-form>
 
     </jb-dialog>
@@ -98,6 +105,9 @@ export default {
         formValid:{type:Boolean, default:true},
         formMensagens:{type:Object, default(){return{mensagens:null, tipo:null, detalhes:null}}},
         resetValidation:Boolean,
+        formOcultarCancelar:Boolean,
+        formOcultarSalvar:Boolean,
+        formOcultarBotoes:Boolean,
 
         //---- Toolbar
         toolbarBtnTitulo:String,

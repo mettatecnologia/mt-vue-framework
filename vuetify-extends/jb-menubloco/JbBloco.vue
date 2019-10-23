@@ -37,7 +37,7 @@
             <v-card-title>
                 <span class="headline">{{ dialogTitulo }}</span>
                 <v-spacer></v-spacer>
-                <jb-icon tt-text="Fechar" @click="v=>( this.dialog.mostrarDialog = false )">fas fa-times</jb-icon>
+                <jb-icon small tt-text="Fechar" @click="v=>( this.dialog.mostrarDialog = false )">fas fa-times</jb-icon>
             </v-card-title>
 
             <v-card-text>

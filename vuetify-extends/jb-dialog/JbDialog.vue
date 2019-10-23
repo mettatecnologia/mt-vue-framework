@@ -11,7 +11,7 @@
                 <slot name="top">
                     <span class="headline">{{ getTitulo }}</span>
                     <v-spacer></v-spacer>
-                    <jb-icon tt-text="Fechar" @click="fechar">fas fa-times</jb-icon>
+                    <jb-icon small tt-text="Fechar" @click="fechar">fas fa-times</jb-icon>
                 </slot>
             </v-card-title>
 
