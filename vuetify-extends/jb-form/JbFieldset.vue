@@ -6,7 +6,11 @@
             v-on="this.$listeners"
             v-bind="this.$attrs"
         >
-            <legend class="theme--light v-label">{{legend_comp}}</legend>
+            <legend class="theme--light v-label">
+                <slot name="legend">
+                    {{legend_comp}}
+                </slot>
+            </legend>
 
             <slot></slot>
 

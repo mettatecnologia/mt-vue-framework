@@ -63,10 +63,11 @@
 
             <slot name="form.actions"  >
                 <div slot="botoes">
-                    <v-row v-if="!formOcultarBotoes" justify="end">
-                        <v-col cols="12" md="3">
-                            <v-spacer></v-spacer>
+                    <v-row v-if="!formOcultarBotoes">
 
+                        <v-spacer></v-spacer>
+
+                        <v-col cols="12" md="4" class="pa-0">
                             <slot v-if="!formOcultarCancelar" name="botao-cancelar">
                                 <v-btn color="primary" text @click="fecharDialog()">Cancelar</v-btn>
                             </slot>
