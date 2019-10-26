@@ -1,54 +1,33 @@
-/** Modelo de array aceito
-$array = [
-    'operacoes'=>[
-        ['action'=>'pessoas','color'=>'orange darken-4','icone'=>'fas fa-users','qtd'=>$pessoas_qtd,'titulo'=>'Pessoas','action-text'=>null,'action-icon'=>null]
-    ],
-    'config'=>[
-        ['action'=>'pessoas','color'=>'orange darken-4','icone'=>'fas fa-users','qtd'=>$pessoas_qtd,'titulo'=>'Pessoas','action-text'=>null,'action-icon'=>null]
-    ]
-];
-*/
+
 <template>
-<v-row align="start">
-     <v-col cols="12" v-for="(blocos, tipo) in array_itens" :key="tipo">
+    <jb-bloco :config="config">
+        <div :class="config.qtd !== null ? 'display-1 font-weight-bold':'display-1 font-weight-bold mt-4 pt-3' ">{{config.qtd}}</div>
+        <div class="subtitle-1">{{config.titulo}}</div>
 
-        <v-row v-if="tipo">
-            <v-col>
-                <v-divider></v-divider>
-                <v-row justify="end"><span class="title font-italic grey--text mr-3">{{tipo}}</span></v-row>
-            </v-col>
-        </v-row>
+        <template slot="conteudo-extra">
 
-        <v-row>
-            <v-col v-for="(bloco, i) in blocos" :key="i" cols="3">
-                <jb-bloco :action="bloco.action" :action-text="bloco['action-text']" :action-icon="bloco['action-icon']" :color="bloco.color" :icone="bloco.icone" :disabled="bloco.disabled">
-                    <div :class="bloco.qtd !== null ? 'display-1 font-weight-bold':'display-1 font-weight-bold mt-4 pt-3' ">{{bloco.qtd}}</div>
-                    <div class="subtitle-1">{{bloco.titulo}}</div>
+            <template v-if="config.blocos && config.blocos.length">
+                <v-row>
+                    <v-col v-for="(bloco, i) in config.blocos" :key="i" :cols="bloco.cols?bloco.cols:3">
+                        <jb-bloco-rec :config="bloco">
+                            <slot v-if="config.id" :name="config.id"> </slot>
+                        </jb-bloco-rec>
+                    </v-col>
+                </v-row>
 
-                    <template slot="conteudo-extra">
-                        <slot v-if="bloco.id" :name="bloco.id"></slot>
-                    </template>
-                </jb-bloco>
-            </v-col>
+            </template>
 
-        </v-row>
+            <slot></slot>
 
-     </v-col>
-</v-row>
+        </template>
+    </jb-bloco>
 </template>
 
 <script>
     export default {
-      props:{
-          itens: String
-      },
-      data(){
-          return {
-              array_itens: [],
-          }
-      },
-      created(){
-          this.array_itens = JSON.parse(this.itens)
-      }
+        name:"jb-bloco-rec",
+        props:{
+            config: Object
+        },
     }
 </script>

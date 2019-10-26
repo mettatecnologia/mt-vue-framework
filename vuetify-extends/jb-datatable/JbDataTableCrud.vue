@@ -35,7 +35,7 @@
                 <slot name="item.prepend-actions" :item="item" :header="header" :value="value" :index="datatableItems.indexOf(item)" ></slot>
 
                 <jb-icon v-if="podeEditar" small tt-text="Editar" @click="editar(item, datatableItems.indexOf(item))" > edit </jb-icon>
-                <jb-icon v-if="podeAtivarInativar" small :tt-text="item.ativo ? 'Inativar' : 'Ativar'" @click="ativarInativarConfirm(item, datatableItems.indexOf(item))" > {{ item.ativo ? 'fas fa-level-down-alt' : 'fas fa-level-up-alt'}} </jb-icon>
+                <jb-icon v-if="podeAtivarInativar" small :tt-text="item.ativo ? 'Inativar' : 'Ativar'" @click="ativarInativarConfirm(item, datatableItems.indexOf(item))" > {{ item.ativo ? 'mdi-arrow-down' : 'mdi-arrow-up'}} </jb-icon>
                 <jb-icon v-if="podeDeletar" small color="red" tt-text="Deletar" @click="deletarConfirm(item, datatableItems.indexOf(item))" > delete </jb-icon>
 
                 <slot name="item.append-actions" :item="item" :header="header" :value="value" :index="datatableItems.indexOf(item)"></slot>
@@ -50,8 +50,8 @@
             <span class="headline">{{ formTitulo }}</span>
             <v-spacer></v-spacer>
 
-            <jb-icon small tt-text="Manter aberto" @click="v=>{dialog.manter_aberto = !dialog.manter_aberto}" :color="dialog.manter_aberto ? 'primary' :  'grey lighten-2'" class="mr-2"> fas fa-thumbtack </jb-icon>
-            <jb-icon small tt-text="Fechar" @click="fecharDialog()">fas fa-times</jb-icon>
+            <jb-icon small tt-text="Manter aberto" @click="v=>{dialog.manter_aberto = !dialog.manter_aberto}" :color="dialog.manter_aberto ? 'primary' :  'grey lighten-2'" class="mr-2"> mdi-pin </jb-icon>
+            <jb-icon small tt-text="Fechar" @click="fecharDialog()">mdi-close</jb-icon>
         </template>
 
 

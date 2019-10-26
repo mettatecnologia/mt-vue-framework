@@ -33,7 +33,7 @@ export default {
             return this.senha_visivel ? 'text' : 'password'
         },
         append_icon_cp(){
-            return this.senha_visivel ? 'visibility' : 'visibility_off'
+            return this.senha_visivel ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
         },
         vuetify_ref(){
             return this.ref || 'jb-text'

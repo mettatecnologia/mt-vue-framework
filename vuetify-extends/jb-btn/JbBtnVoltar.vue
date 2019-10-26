@@ -2,7 +2,7 @@
 
     <v-btn :href="url" :color="color" :fab="fab" :small="small" :icon="icon" :tile="tile" :elevation="elevation">
 
-        <jb-icon  small dark :color="iconColor" > {{icone}} </jb-icon>
+        <jb-icon dark :color="iconColor" > {{icone}} </jb-icon>
         <slot v-if="!fab"> Voltar </slot>
 
     </v-btn>
@@ -24,7 +24,7 @@ export default {
         color:{type:String, default:'white'},
 
         iconColor:{type:String, default:'primary'},
-        icone:{type:String, default:'fas fa-arrow-left'},
+        icone:{type:String, default:'mdi-arrow-left'},
         url:{type:String, default:"javascript:history.back()"},
     },
     computed:{

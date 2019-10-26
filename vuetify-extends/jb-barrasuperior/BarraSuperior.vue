@@ -13,7 +13,7 @@
         </v-app-bar>
 
         <slot name="menu">
-            <!-- <menulateral-principal v-if="comMenu" v-model="abrir_menudrawer" :itens="JSON.parse(menuItens)" ></menulateral-principal> -->
+            <!-- <menulateral-principal v-if="comMenu" v-model="abrir_menudrawer" :itens="menuItens" ></menulateral-principal> -->
         </slot>
 
     </div>
@@ -23,7 +23,7 @@
 
     export default {
         props: {
-            comMenu:Boolean, menuItens:String,
+            comMenu:Boolean, menuItens:Array,
             titulo:String, href:{type:String, default:"/"}, color:{type:String, default:"primary"},
         },
         data: () => ({
