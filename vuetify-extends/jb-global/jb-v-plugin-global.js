@@ -75,6 +75,10 @@ export default {
                 }
             }
 
+            if(typeof valor_procurado=='object'){
+                valor_procurado = valor_procurado[campo_de_busca]
+            }
+
             if( ! case_sensitive){
                 valor_procurado = valor_procurado.toString().toUpperCase()
             }

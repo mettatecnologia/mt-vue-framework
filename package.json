@@ -1,6 +1,6 @@
 {
   "name": "@metta/mt-vue-framework",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "axios": "^0.19",
     "vuetify-dialog": "1.0.0-alpha.1",
     "moment": "^2.24.0",
-    "inputmask": "^4.0.5",
+    "inputmask": "^4.0.9",
     "vue-loading-overlay": "^3.2.0",
     "is-json": "^2.0.1"
   }

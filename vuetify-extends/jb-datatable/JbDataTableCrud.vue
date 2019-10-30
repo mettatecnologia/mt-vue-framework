@@ -69,10 +69,10 @@
 
                         <v-col cols="12" md="4" class="pa-0">
                             <slot v-if="!formOcultarCancelar" name="botao-cancelar">
-                                <v-btn color="primary" text @click="fecharDialog()">Cancelar</v-btn>
+                                <v-btn color="primary" text class="pa-0" @click="fecharDialog()">Cancelar</v-btn>
                             </slot>
                             <slot v-if="!formOcultarSalvar" name="botao-salvar">
-                                <v-btn color="primary" text @click="saveConfirm()" :disabled="!form.valid || !formValid">Salvar</v-btn>
+                                <v-btn color="primary" text class="pa-0" @click="saveConfirm()" :disabled="!form.valid || !formValid">Salvar</v-btn>
                             </slot>
                         </v-col>
                     </v-row>

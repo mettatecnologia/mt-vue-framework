@@ -12,13 +12,13 @@
             :search-input.sync="search"
         >
             <template v-slot:no-data>
-                <v-list-tile>
-                    <v-list-tile-content>
-                    <v-list-tile-title>
+                <v-list-item>
+                    <v-list-item-content>
+                    <v-list-item-title>
                         Nenhum resultado para "<strong>{{ search }}</strong>".
-                    </v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
+                    </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </template>
         </v-combobox>
 
