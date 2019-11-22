@@ -35,13 +35,22 @@ $array = [
             </v-card-text>
 
             <v-card-actions v-if="!bloco.disabled" class="pa-0 fixar">
-                <v-btn depressed small block :href="bloco.action" @click=" v => (bloco.action?null:dialog.mostrarDialog = true) " class="pa-0 caption" ><v-icon class="mr-1 body-1">{{bloco.actionIcon || 'arrow_forward'}}</v-icon> {{bloco.actionText || 'Entrar'}} </v-btn>
+                <v-row no-gutters>
+                    <v-col v-if="bloco.action">
+                        <v-btn v-if="bloco.action.url" tile depressed small block :href="bloco.action.url" @click="actionClick()" class="pa-0 caption" ><v-icon class="body-1">{{actionIcon(bloco.action)}}</v-icon> {{actionText(bloco.action)}} </v-btn>
+                        <v-btn v-else tile depressed small block @click="actionClick()" class="pa-0 caption" ><v-icon class="body-1">{{actionIcon(bloco.action)}}</v-icon> {{actionText(bloco.action)}} </v-btn>
+                    </v-col>
+
+                    <v-col v-if="bloco.action2">
+                        <v-btn v-if="bloco.action2.url" tile depressed small block :href="bloco.action2.url" @click="actionClick()" class="pa-0 caption" ><v-icon class="body-1">{{actionIcon(bloco.action2)}}</v-icon> {{actionText(bloco.action2)}} </v-btn>
+                        <v-btn v-else tile depressed small block @click="action2Click()" class="pa-0 caption" ><v-icon class="body-1">{{actionIcon(bloco.action2)}}</v-icon> {{actionText(bloco.action2)}} </v-btn>
+                    </v-col>
+                </v-row>
             </v-card-actions>
         </v-card>
     </v-hover>
 
-    <!-- <v-dialog v-model="dialog.mostrarDialog" :fullscreen="dialogFullscreen" :persistent="dialogPersistent" :max-width="dialogMaxWidth || '100%'"> -->
-    <v-dialog v-model="dialog.mostrarDialog" :fullscreen="bloco.dialogFullscreen" :persistent="bloco.dialogPersistent" :max-width="bloco.dialogMaxWidth">
+    <v-dialog v-if="criarDialog" v-model="dialog.mostrarDialog" :fullscreen="bloco.dialogFullscreen" :persistent="bloco.dialogPersistent" :max-width="bloco.dialogMaxWidth">
         <v-card>
             <v-card-title>
                 <span class="headline">{{ bloco.dialogTitulo }}</span>
@@ -64,10 +73,12 @@ $array = [
         name:"JbBloco",
         props:{
             config:Object,
-            height:String, color:{type:String, required:false},
+            height:String,
+            color:{type:String, required:false},
             icone:String,
-            action:String, actionText:String, actionIcon:String,
-            hoverText:String, hoverColor:String,
+            action:[Object,String],
+            hoverText:String,
+            hoverColor:String,
             disabled:Boolean,
 
             //---- Dialog
@@ -80,10 +91,8 @@ $array = [
         data(){
             return {
                 bloco:{
-                    action:null,
-                    actionIcon:null,
-                    actionText:null,
-                    color:null,
+                    action:{},
+                    color:'primary',
                     disabled:null,
                     height:null,
                     hoverText:null,
@@ -108,17 +117,57 @@ $array = [
                 },
             }
         },
+        computed:{
+            criarDialog(){
+              return !this.action && !this.action2 && !this.$listeners.hasOwnProperty('action') && !this.$listeners.hasOwnProperty('action2')
+          }
+        },
         created(){
             this.mesclarConfigBloco()
         },
         methods:{
+            actionText(action){
+                let texto=action.text;
+                if( ! texto){
+                    texto = action.url ? 'Entrar' : 'Ver'
+                }
+                return texto
+            },
+            actionIcon(action){
+                let icon=action.icon;
+                if( ! icon){
+                    icon = action.url ? 'arrow_forward' : 'mdi-eye'
+                }
+                return icon
+            },
             mesclarConfigBloco(){
-                Object.assign(this.bloco, {},this.config)
+                for (const prop in this.config) {
+                    let config = this.config[prop];
+
+                    let prop_camel_case = this.$toLowerCamelCase(prop)
+                    this.bloco[prop_camel_case] = config
+                }
 
                 for (const prop in this.bloco) {
                     const config = this.bloco[prop];
+
                     if(this._props.hasOwnProperty(prop) && this._props[prop]){
                         this.bloco[prop] = this._props[prop]
+                    }
+                }
+
+                if(this.bloco.hasOwnProperty('action') && ! this.$typeof(this.bloco.action,'object')){
+                    this.bloco.action = {
+                        url:this.bloco.action,
+                        text:null,
+                        icon:null,
+                    }
+                }
+                if(this.bloco.hasOwnProperty('action2') && ! this.$typeof(this.bloco.action2,'object')){
+                    this.bloco.action2 = {
+                        url:this.bloco.action2,
+                        text:null,
+                        icon:null,
                     }
                 }
             },
@@ -128,15 +177,27 @@ $array = [
                 let classes = base + backColor;
                 return classes;
             },
+            actionClick(){
+                if(this.$listeners.hasOwnProperty('action')){
+                    this.$emit('action')
+                }
+                else if( ! this.action) {
+                    this.dialog.mostrarDialog = true
+                }
+            },
+            action2Click(){
+                if(this.$listeners.hasOwnProperty('action2')){
+                    this.$emit('action2')
+                }
+                else if( ! this.action) {
+                    this.dialog.mostrarDialog = true
+                }
+            },
         }
     }
 </script>
 
 <style media="screen">
-
-/* .v-dialog {
-    width: auto !important;
-} */
 
 .jb-bloco.v-card .icon {
     -webkit-transition: all .3s linear;

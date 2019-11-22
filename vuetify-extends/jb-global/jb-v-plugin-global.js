@@ -181,6 +181,12 @@ export default {
             return obj
         }
         // STRING
+        Vue.prototype.$toLowerCamelCase = function (string) {
+            return string.split('-').map((string, key) => key>0 ? string[0].toUpperCase() + string.slice(1) : string).join('')
+        }
+        Vue.prototype.$toUpperCamelCase = function (string) {
+            return string.split('-').map(string => string[0].toUpperCase() + string.slice(1)).join('')
+        }
         Vue.prototype.$removerEspacos = function (string) {
             let regex = this.$regex('espacos')
             return string.replace(regex, ''); //remove os espaços

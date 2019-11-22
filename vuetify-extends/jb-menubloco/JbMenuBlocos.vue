@@ -2,7 +2,6 @@
 <v-row align="start">
 
      <v-col :cols="cols" v-for="(blocos, tipo) in itens" :key="tipo">
-
         <v-row v-if="tipo">
             <v-col>
                 <v-divider></v-divider>
@@ -28,7 +27,7 @@
 <script>
     export default {
         props:{
-            itens: Object,
+            itens: [Object, Array],
             cols:{type:String, default:'12'},
         },
     }
